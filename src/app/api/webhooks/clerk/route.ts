@@ -1,14 +1,7 @@
 import { Webhook } from 'svix';
-import { buffer } from 'micro';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -18,7 +11,7 @@ export async function POST(req: Request) {
   }
 
   // Get the headers
-  const headerPayload = headers();
+  const headerPayload = await headers();
   const svixId = headerPayload.get('svix-id');
   const svixTimestamp = headerPayload.get('svix-timestamp');
   const svixSignature = headerPayload.get('svix-signature');
@@ -31,8 +24,7 @@ export async function POST(req: Request) {
   }
 
   // Get the body
-  const body = await buffer(req);
-  const payload = body.toString();
+  const body = await req.text();
 
   const wh = new Webhook(WEBHOOK_SECRET);
 
@@ -40,7 +32,7 @@ export async function POST(req: Request) {
 
   // Verify the payload with the headers
   try {
-    evt = wh.verify(payload, {
+    evt = wh.verify(body, {
       'svix-id': svixId,
       'svix-timestamp': svixTimestamp,
       'svix-signature': svixSignature,

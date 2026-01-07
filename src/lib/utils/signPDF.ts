@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
  * @param position - The position {x, y} to place the signature
  * @param scale - The scale factor for the signature
  * @param pageNumber - The page number (0-indexed) to place the signature
- * @returns Promise<ArrayBuffer> - The signed PDF as ArrayBuffer
+ * @returns Promise<Uint8Array> - The signed PDF as Uint8Array
  */
 export async function signPDF(
   pdfBytes: ArrayBuffer,
@@ -16,7 +16,7 @@ export async function signPDF(
   position: { x: number; y: number },
   scale: number = 1,
   pageNumber: number = 0
-): Promise<ArrayBuffer> {
+): Promise<Uint8Array> {
   try {
     console.log('Starting PDF signing process...', { position, scale, pageNumber });
 
@@ -88,12 +88,14 @@ export async function signPDF(
 }
 
 /**
- * Downloads a PDF from ArrayBuffer
- * @param pdfBytes - The PDF as ArrayBuffer
+ * Downloads a PDF from Uint8Array
+ * @param pdfBytes - The PDF as Uint8Array
  * @param filename - The name for the downloaded file
  */
-export function downloadSignedPDF(pdfBytes: ArrayBuffer, filename: string = 'signed-document.pdf') {
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+export function downloadSignedPDF(pdfBytes: Uint8Array, filename: string = 'signed-document.pdf') {
+  // Create a new Uint8Array to ensure compatibility
+  const buffer = new Uint8Array(pdfBytes);
+  const blob = new Blob([buffer], { type: 'application/pdf' });
   saveAs(blob, filename);
 }
 

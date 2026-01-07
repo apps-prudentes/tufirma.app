@@ -1,22 +1,18 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getAuth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import prisma from '@/lib/db';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
+  apiVersion: '2025-12-15.clover',
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
+export async function POST(req: NextRequest) {
   try {
     // Get authenticated user
-    const { userId } = getAuth(req);
+    const { userId } = await auth();
     if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
@@ -25,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!user || !user.stripeCustomerId) {
-      return res.status(400).json({ message: 'User does not have a Stripe customer ID' });
+      return NextResponse.json({ error: 'User does not have a Stripe customer ID' }, { status: 400 });
     }
 
     // Create billing portal session
@@ -34,9 +30,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
     });
 
-    res.status(200).json({ url: session.url });
+    return NextResponse.json({ url: session.url }, { status: 200 });
   } catch (error) {
     console.error('Error creating billing portal session:', error);
-    res.status(500).json({ message: 'Error creating billing portal session' });
+    return NextResponse.json({ error: 'Error creating billing portal session' }, { status: 500 });
   }
 }
