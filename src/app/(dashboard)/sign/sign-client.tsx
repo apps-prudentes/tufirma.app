@@ -164,21 +164,77 @@ export function SignPageClient() {
 
       // Calculate the scale ratio between displayed PDF and actual PDF
       let adjustedPosition = signaturePosition;
-      if (pdfDimensions && pdfContainerRef.current) {
-        const displayedPdfWidth = Math.min(window.innerWidth - 500, 1000);
-        const scaleRatio = pdfDimensions.width / displayedPdfWidth;
+      let adjustedSignatureSize = { width: 150 * signatureScale, height: 150 * signatureScale }; // Default
 
+      // Get the actual displayed signature dimensions from the DOM
+      const signatureElement = document.querySelector('[alt="Signature"]') as HTMLImageElement;
+      let displayedWidth = 150 * signatureScale;
+      let displayedHeight = 150 * signatureScale;
+
+      if (signatureElement) {
+        // Get the natural dimensions of the image
+        const imgWidth = signatureElement.naturalWidth || 150;
+        const imgHeight = signatureElement.naturalHeight || 150;
+        const aspectRatio = imgHeight / imgWidth;
+
+        // Calculate displayed dimensions (150px base width * scale * aspect ratio)
+        displayedWidth = 150 * signatureScale;
+        displayedHeight = displayedWidth * aspectRatio;
+
+        console.log('Signature image info:', {
+          naturalWidth: imgWidth,
+          naturalHeight: imgHeight,
+          aspectRatio,
+          displayedWidth,
+          displayedHeight,
+          scale: signatureScale
+        });
+      }
+
+      if (pdfDimensions && pdfContainerRef.current) {
+        // Get the ACTUAL visible PDF dimensions from the canvas element
+        const pdfCanvas = pdfContainerRef.current.querySelector('canvas');
+        if (!pdfCanvas) {
+          console.error('Canvas not found');
+          return;
+        }
+
+        const canvasRect = pdfCanvas.getBoundingClientRect();
+        const containerRect = pdfContainerRef.current.getBoundingClientRect();
+
+        const actualDisplayedWidth = canvasRect.width;
+        const actualDisplayedHeight = canvasRect.height;
+
+        // Calculate offset between container and canvas (in case there's padding/margin)
+        const offsetX = canvasRect.left - containerRect.left;
+        const offsetY = canvasRect.top - containerRect.top;
+
+        const scaleRatio = pdfDimensions.width / actualDisplayedWidth;
+
+        // Convert position to PDF coordinates (adjust for any offset first)
         adjustedPosition = {
-          x: signaturePosition.x * scaleRatio,
-          y: signaturePosition.y * scaleRatio
+          x: (signaturePosition.x - offsetX) * scaleRatio,
+          y: (signaturePosition.y - offsetY) * scaleRatio
         };
 
-        console.log('Position conversion:', {
-          original: signaturePosition,
-          adjusted: adjustedPosition,
+        // Convert signature size to PDF coordinates
+        adjustedSignatureSize = {
+          width: displayedWidth * scaleRatio,
+          height: displayedHeight * scaleRatio
+        };
+
+        console.log('Position and size conversion:', {
+          originalPosition: signaturePosition,
+          adjustedPosition,
+          displayedSize: { width: displayedWidth, height: displayedHeight },
+          adjustedSize: adjustedSignatureSize,
           scaleRatio,
-          displayedPdfWidth,
-          realPdfWidth: pdfDimensions.width
+          actualDisplayedWidth,
+          actualDisplayedHeight,
+          offset: { x: offsetX, y: offsetY },
+          canvasRect: { left: canvasRect.left, top: canvasRect.top, width: canvasRect.width, height: canvasRect.height },
+          containerRect: { left: containerRect.left, top: containerRect.top, width: containerRect.width, height: containerRect.height },
+          realPdfDimensions: pdfDimensions
         });
       }
 
@@ -187,7 +243,7 @@ export function SignPageClient() {
         pdfBytes,
         signatureImage,
         adjustedPosition,
-        signatureScale,
+        adjustedSignatureSize,
         pageNumber - 1 // Convert to 0-indexed
       );
 
