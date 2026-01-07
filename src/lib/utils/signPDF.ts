@@ -18,38 +18,68 @@ export async function signPDF(
   pageNumber: number = 0
 ): Promise<ArrayBuffer> {
   try {
+    console.log('Starting PDF signing process...', { position, scale, pageNumber });
+
     // Load the existing PDF
     const pdfDoc = await PDFDocument.load(pdfBytes);
-    
-    // Embed the signature image
-    const signaturePng = await pdfDoc.embedPng(signatureImage);
-    
+
     // Get the page where the signature will be placed
     const page = pdfDoc.getPage(pageNumber);
-    
-    // Get page dimensions to adjust coordinates
-    const { width, height } = page.getSize();
-    
-    // Calculate scaled dimensions
-    const scaledWidth = signaturePng.width * scale;
-    const scaledHeight = signaturePng.height * scale;
-    
-    // Adjust coordinates based on PDF coordinate system (origin is bottom-left)
-    const adjustedX = position.x;
-    const adjustedY = height - position.y - scaledHeight;
-    
+    const { width: pageWidth, height: pageHeight } = page.getSize();
+
+    console.log('PDF page dimensions:', { pageWidth, pageHeight });
+
+    // Embed the signature image (detect if PNG or JPEG)
+    let embeddedImage;
+    if (signatureImage.includes('image/png')) {
+      embeddedImage = await pdfDoc.embedPng(signatureImage);
+    } else if (signatureImage.includes('image/jpeg') || signatureImage.includes('image/jpg')) {
+      embeddedImage = await pdfDoc.embedJpg(signatureImage);
+    } else {
+      // Default to PNG
+      embeddedImage = await pdfDoc.embedPng(signatureImage);
+    }
+
+    console.log('Signature image embedded:', {
+      originalWidth: embeddedImage.width,
+      originalHeight: embeddedImage.height
+    });
+
+    // Calculate signature dimensions
+    // The signature image is typically large, so we need to scale it down significantly
+    const signatureBaseWidth = 200; // Base width for signature in PDF points
+    const signatureAspectRatio = embeddedImage.height / embeddedImage.width;
+    const signatureBaseHeight = signatureBaseWidth * signatureAspectRatio;
+
+    // Apply the user's scale
+    const finalWidth = signatureBaseWidth * scale;
+    const finalHeight = signatureBaseHeight * scale;
+
+    console.log('Final signature dimensions:', { finalWidth, finalHeight });
+
+    // PDF coordinate system has origin at bottom-left
+    // Our position from the UI is top-left, so we need to convert
+    const pdfX = position.x;
+    const pdfY = pageHeight - position.y - finalHeight;
+
+    console.log('Final position:', { pdfX, pdfY });
+
     // Draw the signature on the page
-    page.drawImage(signaturePng, {
-      x: adjustedX,
-      y: adjustedY,
-      width: scaledWidth,
-      height: scaledHeight,
+    page.drawImage(embeddedImage, {
+      x: pdfX,
+      y: pdfY,
+      width: finalWidth,
+      height: finalHeight,
       opacity: 1,
     });
-    
+
+    console.log('Signature drawn successfully');
+
     // Save the modified PDF
     const signedPdfBytes = await pdfDoc.save();
-    
+
+    console.log('PDF saved successfully');
+
     return signedPdfBytes;
   } catch (error) {
     console.error('Error signing PDF:', error);

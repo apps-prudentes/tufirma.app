@@ -1,26 +1,33 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { PDFViewer } from '@/components/pdf/pdf-viewer';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { SignatureCanvasComponent } from '@/components/signature/signature-canvas';
 import { DraggableSignature } from '@/components/signature/draggable-signature';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { signPDF, downloadSignedPDF } from '@/lib/utils/signPDF';
 import { checkSignatureLimit, registerSignature } from '@/lib/utils/signatureLimits';
+import { Upload, FileText } from 'lucide-react';
+
+// Set up the worker for PDF.js
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function SignPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
   const [signatureImage, setSignatureImage] = useState<string | null>(null);
-  const [signaturePosition, setSignaturePosition] = useState({ x: 100, y: 100 });
-  const [signatureScale, setSignatureScale] = useState(1);
-  const [activePage, setActivePage] = useState(1);
+  const [signaturePosition, setSignaturePosition] = useState({ x: 50, y: 50 });
+  const [signatureScale, setSignatureScale] = useState(0.5);
+  const [pdfDimensions, setPdfDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isPlacingSignature, setIsPlacingSignature] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [limitInfo, setLimitInfo] = useState<{ canSign: boolean; remaining: number; plan: string } | null>(null);
 
   const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Reset loading when pdfFile or signatureImage changes
   useEffect(() => {
@@ -52,12 +59,40 @@ export default function SignPage() {
     loadLimitInfo();
   }, []);
 
-  const handleSignatureChange = (dataUrl: string) => {
-    setSignatureImage(dataUrl);
+  const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+    setPageNumber(1);
+
+    // Get PDF dimensions for coordinate conversion
+    if (pdfFile) {
+      try {
+        const arrayBuffer = await pdfFile.arrayBuffer();
+        const { PDFDocument } = await import('pdf-lib');
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        const firstPage = pdfDoc.getPage(0);
+        const { width, height } = firstPage.getSize();
+        setPdfDimensions({ width, height });
+        console.log('PDF real dimensions:', { width, height });
+      } catch (error) {
+        console.error('Error getting PDF dimensions:', error);
+      }
+    }
   };
 
-  const handlePdfFileChange = (file: File | null) => {
-    setPdfFile(file);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.type === 'application/pdf') {
+        setPdfFile(file);
+        setIsPlacingSignature(false);
+      } else {
+        alert('Por favor selecciona un archivo PDF');
+      }
+    }
+  };
+
+  const handleSignatureChange = (dataUrl: string) => {
+    setSignatureImage(dataUrl);
   };
 
   const handleSignaturePositionChange = (position: { x: number; y: number }) => {
@@ -68,16 +103,23 @@ export default function SignPage() {
     setSignatureScale(scale);
   };
 
-  const handleDragEnd = () => {
-    setIsPlacingSignature(false);
-  };
-
   const handlePlaceSignature = () => {
     if (!signatureImage) {
       alert('Por favor, crea una firma primero');
       return;
     }
-    setIsPlacingSignature(true);
+    if (!pdfFile) {
+      alert('Por favor, carga un PDF primero');
+      return;
+    }
+    setIsPlacingSignature(!isPlacingSignature);
+  };
+
+  const changePage = (offset: number) => {
+    setPageNumber(prevPageNumber => {
+      const newPageNumber = prevPageNumber + offset;
+      return numPages ? Math.min(Math.max(1, newPageNumber), numPages) : 1;
+    });
   };
 
   const handleExportPDF = async () => {
@@ -91,7 +133,7 @@ export default function SignPage() {
       return;
     }
 
-    // Check signature limit before proceeding
+    // Try to check signature limit (optional - won't block export if it fails)
     try {
       const limitData = await checkSignatureLimit();
       setLimitInfo({
@@ -101,17 +143,16 @@ export default function SignPage() {
       });
 
       if (!limitData.canSign) {
-        alert(`Has alcanzado tu límite de firmas. Plan: ${limitData.plan}. Máximo: ${limitData.maxSignatures} por ${limitData.period}.`);
-        return;
+        const proceed = confirm(`Has alcanzado tu límite de firmas (${limitData.maxSignatures} por ${limitData.period}). ¿Deseas continuar de todas formas?`);
+        if (!proceed) return;
       }
     } catch (error) {
-      console.error('Error checking signature limit:', error);
-      alert('Error verificando el límite de firmas. Por favor intenta de nuevo.');
-      return;
+      console.warn('Could not check signature limit (continuing anyway):', error);
+      // Continue with export even if limit check fails
     }
 
     setIsLoading(true);
-    setProgress(10); // Start with 10% progress
+    setProgress(10);
 
     try {
       // Update progress during processing
@@ -121,13 +162,33 @@ export default function SignPage() {
       const pdfBytes = await pdfFile.arrayBuffer();
       setProgress(60);
 
-      // Sign the PDF
+      // Calculate the scale ratio between displayed PDF and actual PDF
+      let adjustedPosition = signaturePosition;
+      if (pdfDimensions && pdfContainerRef.current) {
+        const displayedPdfWidth = Math.min(window.innerWidth - 500, 1000);
+        const scaleRatio = pdfDimensions.width / displayedPdfWidth;
+
+        adjustedPosition = {
+          x: signaturePosition.x * scaleRatio,
+          y: signaturePosition.y * scaleRatio
+        };
+
+        console.log('Position conversion:', {
+          original: signaturePosition,
+          adjusted: adjustedPosition,
+          scaleRatio,
+          displayedPdfWidth,
+          realPdfWidth: pdfDimensions.width
+        });
+      }
+
+      // Sign the PDF (100% client-side with pdf-lib)
       const signedPdfBytes = await signPDF(
         pdfBytes,
         signatureImage,
-        signaturePosition,
+        adjustedPosition,
         signatureScale,
-        activePage // For now, using active page (0-indexed)
+        pageNumber - 1 // Convert to 0-indexed
       );
 
       setProgress(90);
@@ -135,7 +196,9 @@ export default function SignPage() {
       // Download the signed PDF
       downloadSignedPDF(signedPdfBytes, `signed-${pdfFile.name}`);
 
-      // Register the signature in the database
+      setProgress(100);
+
+      // Try to register the signature (optional - won't affect the export)
       try {
         await registerSignature(pdfFile.name);
         // Update the displayed limit info after successful registration
@@ -146,11 +209,9 @@ export default function SignPage() {
           plan: updatedLimitData.plan
         });
       } catch (registrationError) {
-        console.error('Error registering signature:', registrationError);
-        // Still allow the download even if registration fails
+        console.warn('Could not register signature in database:', registrationError);
+        // Export still succeeded - just couldn't track it in DB
       }
-
-      setProgress(100);
 
       // Reset loading after a short delay
       setTimeout(() => {
@@ -166,117 +227,185 @@ export default function SignPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Firmar PDF</h1>
-
-      {limitInfo && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-blue-800">
-            Plan: <span className="font-semibold">{limitInfo.plan}</span> |
-            Firmas restantes: <span className="font-semibold">{limitInfo.remaining}</span>
-          </p>
-          {!limitInfo.canSign && (
-            <p className="text-red-600 mt-2">
-              Has alcanzado tu límite de firmas para este período.
-              <a href="/upgrade" className="text-blue-600 underline ml-1">Mejora tu plan</a> para más firmas.
-            </p>
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-96 bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
+        <div className="p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900">Firmar PDF</h1>
+          {limitInfo && (
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                Plan: <span className="font-semibold">{limitInfo.plan}</span>
+                <br />
+                Firmas restantes: <span className="font-semibold">{limitInfo.remaining}</span>
+              </p>
+            </div>
           )}
         </div>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upload PDF Section */}
-        <div className="lg:col-span-1">
+        <div className="flex-1 p-6 space-y-6">
+          {/* Upload PDF */}
           <Card>
-            <CardContent className="p-4">
-              <h2 className="text-xl font-semibold mb-4">1. Cargar PDF</h2>
-              <PDFViewer file={pdfFile} onFileChange={handlePdfFileChange} />
+            <CardHeader>
+              <CardTitle className="text-lg">1. Cargar PDF</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="application/pdf"
+                onChange={handleFileChange}
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full"
+                variant="outline"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {pdfFile ? 'Cambiar PDF' : 'Seleccionar PDF'}
+              </Button>
+              {pdfFile && (
+                <div className="mt-3 p-3 bg-gray-50 rounded flex items-start gap-2">
+                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {pdfFile.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {numPages ? `${numPages} página${numPages > 1 ? 's' : ''}` : 'Cargando...'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
-        </div>
 
-        {/* Signature Canvas Section */}
-        <div className="lg:col-span-1">
+          {/* Signature Canvas */}
           <Card>
-            <CardContent className="p-4">
-              <h2 className="text-xl font-semibold mb-4">2. Crear Firma</h2>
+            <CardHeader>
+              <CardTitle className="text-lg">2. Crear Firma</CardTitle>
+            </CardHeader>
+            <CardContent>
               <SignatureCanvasComponent onSignatureChange={handleSignatureChange} />
             </CardContent>
           </Card>
-        </div>
 
-        {/* PDF Viewer with Signature Placement Section */}
-        <div className="lg:col-span-1">
+          {/* Actions */}
           <Card>
-            <CardContent className="p-4">
-              <h2 className="text-xl font-semibold mb-4">3. Firmar PDF</h2>
+            <CardHeader>
+              <CardTitle className="text-lg">3. Firmar</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                onClick={handlePlaceSignature}
+                className="w-full"
+                variant={isPlacingSignature ? "default" : "outline"}
+                disabled={!pdfFile || !signatureImage || isLoading}
+              >
+                {isPlacingSignature ? 'Ocultar firma' : 'Colocar firma en PDF'}
+              </Button>
 
-              <div className="space-y-4">
-                {pdfFile && signatureImage ? (
-                  <>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        onClick={handlePlaceSignature}
-                        disabled={isPlacingSignature || isLoading || (limitInfo ? !limitInfo.canSign : false)}
-                      >
-                        {isPlacingSignature ? 'Soltar firma' : 'Colocar firma'}
-                      </Button>
-                      <Button
-                        onClick={handleExportPDF}
-                        variant="default"
-                        disabled={isLoading || (limitInfo ? !limitInfo.canSign : false)}
-                      >
-                        {isLoading ? 'Firmando...' : 'Exportar PDF firmado'}
-                      </Button>
-                    </div>
+              <Button
+                onClick={handleExportPDF}
+                className="w-full"
+                disabled={!pdfFile || !signatureImage || isLoading || (limitInfo ? !limitInfo.canSign : false)}
+              >
+                {isLoading ? `Exportando... ${progress}%` : 'Exportar PDF firmado'}
+              </Button>
 
-                    {isLoading && (
-                      <div className="space-y-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div
-                            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-sm text-gray-600">Progreso: {progress}%</p>
-                      </div>
-                    )}
-
+              {isLoading && (
+                <div className="space-y-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      ref={pdfContainerRef}
-                      className="relative border rounded bg-gray-100 overflow-auto max-h-[500px]"
-                    >
-                      {/* We'll render the PDF viewer here with signature overlay */}
-                      <div className="p-4 text-center text-gray-500">
-                        Vista previa del PDF con firma (la versión real se descargará al hacer clic en "Exportar PDF firmado")
-                      </div>
-
-                      {/* Signature overlay when placing */}
-                      {isPlacingSignature && signatureImage && (
-                        <DraggableSignature
-                          signatureImage={signatureImage}
-                          position={signaturePosition}
-                          onPositionChange={handleSignaturePositionChange}
-                          scale={signatureScale}
-                          onScaleChange={handleSignatureScaleChange}
-                          onPage={activePage}
-                          onDragEnd={handleDragEnd}
-                        />
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center p-8 text-gray-500">
-                    {pdfFile ? (
-                      <p>Por favor, crea una firma para continuar</p>
-                    ) : (
-                      <p>Por favor, carga un PDF y crea una firma para continuar</p>
-                    )}
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    ></div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Main Content - PDF Viewer */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {pdfFile ? pdfFile.name : 'Vista previa del PDF'}
+              </h2>
+              {numPages && (
+                <p className="text-sm text-gray-600">
+                  Página {pageNumber} de {numPages}
+                </p>
+              )}
+            </div>
+            {pdfFile && numPages && (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => changePage(-1)}
+                  disabled={pageNumber <= 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Anterior
+                </Button>
+                <Button
+                  onClick={() => changePage(1)}
+                  disabled={pageNumber >= numPages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Siguiente
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-auto bg-gray-100 p-6 flex items-center justify-center">
+          {pdfFile ? (
+            <div className="relative inline-block" ref={pdfContainerRef}>
+              <Document
+                file={pdfFile}
+                onLoadSuccess={onDocumentLoadSuccess}
+                className="shadow-2xl"
+              >
+                <Page
+                  pageNumber={pageNumber}
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                  width={Math.min(window.innerWidth - 500, 1000)}
+                />
+              </Document>
+
+              {/* Draggable Signature Overlay */}
+              {isPlacingSignature && signatureImage && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="pointer-events-auto">
+                    <DraggableSignature
+                      signatureImage={signatureImage}
+                      position={signaturePosition}
+                      onPositionChange={handleSignaturePositionChange}
+                      scale={signatureScale}
+                      onScaleChange={handleSignatureScaleChange}
+                      onPage={pageNumber}
+                      onDragEnd={() => {}}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center p-12 text-gray-400">
+              <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-medium">No hay PDF cargado</p>
+              <p className="text-sm">Selecciona un PDF desde el sidebar para comenzar</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

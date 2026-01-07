@@ -30,15 +30,20 @@ export function DraggableSignature({
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging || !signatureRef.current) return;
 
-      const containerRect = signatureRef.current.parentElement?.getBoundingClientRect();
-      if (!containerRect) return;
+      const container = signatureRef.current.parentElement?.parentElement;
+      if (!container) return;
+
+      const containerRect = container.getBoundingClientRect();
 
       const newX = e.clientX - containerRect.left - dragOffset.x;
       const newY = e.clientY - containerRect.top - dragOffset.y;
 
       // Keep signature within bounds
-      const boundedX = Math.max(0, Math.min(newX, containerRect.width - signatureRef.current.offsetWidth));
-      const boundedY = Math.max(0, Math.min(newY, containerRect.height - signatureRef.current.offsetHeight));
+      const signatureWidth = signatureRef.current.offsetWidth * scale;
+      const signatureHeight = signatureRef.current.offsetHeight * scale;
+
+      const boundedX = Math.max(0, Math.min(newX, containerRect.width - signatureWidth));
+      const boundedY = Math.max(0, Math.min(newY, containerRect.height - signatureHeight));
 
       onPositionChange({ x: boundedX, y: boundedY });
     };
@@ -59,21 +64,22 @@ export function DraggableSignature({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, dragOffset, onPositionChange, onDragEnd]);
+  }, [isDragging, dragOffset, onPositionChange, onDragEnd, scale]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (!signatureRef.current) return;
 
-    const rect = signatureRef.current.getBoundingClientRect();
-    const containerRect = signatureRef.current.parentElement?.getBoundingClientRect();
-    
-    if (containerRect) {
-      setDragOffset({
-        x: e.clientX - (containerRect.left + position.x),
-        y: e.clientY - (containerRect.top + position.y)
-      });
-      setIsDragging(true);
-    }
+    const container = signatureRef.current.parentElement?.parentElement;
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+
+    setDragOffset({
+      x: e.clientX - containerRect.left - position.x,
+      y: e.clientY - containerRect.top - position.y
+    });
+    setIsDragging(true);
   };
 
   const handleScaleChange = (direction: 'up' | 'down') => {
@@ -90,52 +96,63 @@ export function DraggableSignature({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="text-sm">
-          Página {onPage} • Posición: X: {Math.round(position.x)}, Y: {Math.round(position.y)}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => handleScaleChange('down')}
-          >
-            -
-          </Button>
-          <span className="self-center text-sm">
-            {Math.round(scale * 100)}%
-          </span>
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => handleScaleChange('up')}
-          >
-            +
-          </Button>
-        </div>
-      </div>
-      
-      <div 
-        ref={signatureRef}
-        className={`absolute cursor-move transition-transform ${
-          isDragging ? 'opacity-90 z-10 shadow-lg' : 'opacity-100 z-0'
-        }`}
+    <div
+      ref={signatureRef}
+      className={`absolute cursor-move select-none ${
+        isDragging ? 'opacity-70 scale-105 z-50' : 'opacity-90 z-40'
+      } transition-all duration-150`}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }}
+      onMouseDown={handleMouseDown}
+      title="Arrastra para posicionar la firma. Usa la rueda del mouse para cambiar el tamaño."
+    >
+      <div
+        className="border-2 border-blue-500 rounded bg-white/90 shadow-xl backdrop-blur-sm"
         style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
           transform: `scale(${scale})`,
-          transformOrigin: 'top left'
+          transformOrigin: 'top left',
         }}
-        onMouseDown={handleMouseDown}
       >
-        <img 
-          src={signatureImage} 
-          alt="Signature to place on PDF" 
-          className="border-2 border-blue-500 rounded bg-white shadow-md"
-          style={{ pointerEvents: 'none' }}
+        <img
+          src={signatureImage}
+          alt="Signature"
+          className="max-w-none"
+          style={{
+            pointerEvents: 'none',
+            width: '150px',
+            height: 'auto'
+          }}
+          draggable={false}
         />
+      </div>
+
+      {/* Size controls overlay */}
+      <div className="absolute -top-8 left-0 right-0 flex justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleScaleChange('down');
+          }}
+          className="bg-black/70 text-white px-2 py-1 rounded text-xs hover:bg-black"
+          type="button"
+        >
+          -
+        </button>
+        <span className="bg-black/70 text-white px-2 py-1 rounded text-xs">
+          {Math.round(scale * 100)}%
+        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleScaleChange('up');
+          }}
+          className="bg-black/70 text-white px-2 py-1 rounded text-xs hover:bg-black"
+          type="button"
+        >
+          +
+        </button>
       </div>
     </div>
   );
