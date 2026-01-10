@@ -48,26 +48,56 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === 'user.created') {
-    await prisma.user.create({
-      data: {
-        id,
-        email: email_addresses[0].email_address,
-        name: `${first_name || ''} ${last_name || ''}`.trim() || null,
-        plan: 'FREE', // Default to FREE plan
-      },
-    });
+    try {
+      const email = email_addresses?.[0]?.email_address;
+      if (!email) {
+        console.warn('User created event but no email found:', id);
+        return new NextResponse('No email found for user', { status: 400 });
+      }
+
+      await prisma.user.create({
+        data: {
+          id,
+          email,
+          name: `${first_name || ''} ${last_name || ''}`.trim() || null,
+          plan: 'FREE',
+        },
+      });
+      console.log('User created in database:', id, email);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return new NextResponse('Error creating user', { status: 500 });
+    }
   } else if (eventType === 'user.updated') {
-    await prisma.user.update({
-      where: { id },
-      data: {
-        email: email_addresses[0].email_address,
-        name: `${first_name || ''} ${last_name || ''}`.trim() || null,
-      },
-    });
+    try {
+      const email = email_addresses?.[0]?.email_address;
+      if (!email) {
+        console.warn('User updated event but no email found:', id);
+        return new NextResponse('No email found for user', { status: 400 });
+      }
+
+      await prisma.user.update({
+        where: { id },
+        data: {
+          email,
+          name: `${first_name || ''} ${last_name || ''}`.trim() || null,
+        },
+      });
+      console.log('User updated in database:', id);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return new NextResponse('Error updating user', { status: 500 });
+    }
   } else if (eventType === 'user.deleted') {
-    await prisma.user.delete({
-      where: { id },
-    });
+    try {
+      await prisma.user.delete({
+        where: { id },
+      });
+      console.log('User deleted from database:', id);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return new NextResponse('Error deleting user', { status: 500 });
+    }
   }
 
   return new NextResponse('', { status: 200 });
