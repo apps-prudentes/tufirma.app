@@ -1,11 +1,14 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
 
-  // Configuración vacía para Turbopack (silencia el warning)
-  turbopack: {},
+  // Configuración para Turbopack
+  turbopack: {
+    root: __dirname,
+  },
 
   // Configuración para Webpack cuando se usa --webpack
   webpack: (config) => {
