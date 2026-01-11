@@ -3,17 +3,23 @@ import { db } from './index';
 import { users, signatures, type NewUser } from './schema';
 
 // User operations
-export async function createUser(data: Omit<NewUser, 'createdAt' | 'updatedAt'>) {
+export async function createUser(data: {
+  id: string;
+  email: string;
+  name: string | null;
+  plan?: string;
+}) {
   const now = new Date();
-  const [user] = await db.insert(users).values({
+  const values: any = {
     id: data.id,
     email: data.email,
-    name: data.name || null,
-    plan: data.plan || 'FREE',
-    stripeCustomerId: null,
+    name: data.name,
+    plan: (data.plan || 'FREE') as any,
     createdAt: now,
     updatedAt: now,
-  }).returning();
+  };
+
+  const [user] = await db.insert(users).values(values).returning();
   return user;
 }
 
