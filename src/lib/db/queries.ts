@@ -1,14 +1,14 @@
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 import { db } from './index';
-import { profiles, signatures } from './schema';
+import { profiles, signatures, type Profile, type Signature } from './schema';
 
 // Profile operations
-export async function getProfileById(id: string) {
+export async function getProfileById(id: string): Promise<Profile | undefined> {
   const [profile] = await db.select().from(profiles).where(eq(profiles.id, id));
   return profile;
 }
 
-export async function createProfile(userId: string) {
+export async function createProfile(userId: string): Promise<Profile> {
   const now = new Date();
 
   const result = await db.execute(sql`
@@ -19,10 +19,10 @@ export async function createProfile(userId: string) {
     RETURNING *
   `);
 
-  return result[0];
+  return result[0] as Profile;
 }
 
-export async function updateProfile(id: string, data: { plan?: string; stripeCustomerId?: string | null }) {
+export async function updateProfile(id: string, data: { plan?: string; stripeCustomerId?: string | null }): Promise<Profile> {
   const now = new Date();
   const updates: string[] = ['updated_at = $1'];
   const values: any[] = [now];
@@ -47,16 +47,16 @@ export async function updateProfile(id: string, data: { plan?: string; stripeCus
     RETURNING *
   `, [...values, id]));
 
-  return result[0];
+  return result[0] as Profile;
 }
 
-export async function getProfileByStripeCustomerId(stripeCustomerId: string) {
+export async function getProfileByStripeCustomerId(stripeCustomerId: string): Promise<Profile | undefined> {
   const [profile] = await db.select().from(profiles).where(eq(profiles.stripeCustomerId, stripeCustomerId));
   return profile;
 }
 
 // Signature operations
-export async function createSignature(data: { userId: string; fileName: string; weekNumber: string; monthYear: string }) {
+export async function createSignature(data: { userId: string; fileName: string; weekNumber: string; monthYear: string }): Promise<Signature> {
   const id = `sig_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const [signature] = await db.insert(signatures).values({
     id,
@@ -69,7 +69,7 @@ export async function createSignature(data: { userId: string; fileName: string; 
   return signature;
 }
 
-export async function countSignatures(userId: string, startDate: Date, endDate: Date) {
+export async function countSignatures(userId: string, startDate: Date, endDate: Date): Promise<number> {
   const result = await db
     .select()
     .from(signatures)
