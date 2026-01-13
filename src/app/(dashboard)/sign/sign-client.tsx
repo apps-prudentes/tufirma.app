@@ -26,6 +26,7 @@ export function SignPageClient() {
   const [progress, setProgress] = useState(0);
   const [limitInfo, setLimitInfo] = useState<{ canSign: boolean; remaining: number; plan: string } | null>(null);
   const [pdfScale, setPdfScale] = useState(1); // Zoom level for PDF viewer
+  const [mobileTab, setMobileTab] = useState<'prepare' | 'preview'>('prepare'); // Tab state for mobile
 
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +60,7 @@ export function SignPageClient() {
 
     loadLimitInfo();
   }, []);
+
 
   const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -114,6 +116,13 @@ export function SignPageClient() {
       return;
     }
     setIsPlacingSignature(!isPlacingSignature);
+
+    // Auto-switch to preview tab on mobile when placing signature
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      if (!isPlacingSignature) { // If we're about to show the signature
+        setMobileTab('preview');
+      }
+    }
   };
 
   const changePage = (offset: number) => {
@@ -164,6 +173,14 @@ export function SignPageClient() {
       // Continue with export even if limit check fails
     }
 
+    // On mobile, switch to preview tab so the PDF canvas is rendered and we can get accurate measurements
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+    if (isMobile && mobileTab !== 'preview') {
+      setMobileTab('preview');
+      // Wait a bit for the DOM to update and canvas to render
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
     setIsLoading(true);
     setProgress(10);
 
@@ -208,47 +225,76 @@ export function SignPageClient() {
         // Get the ACTUAL visible PDF dimensions from the canvas element
         const pdfCanvas = pdfContainerRef.current.querySelector('canvas');
         if (!pdfCanvas) {
-          console.error('Canvas not found');
-          return;
+          console.error('Canvas not found, using fallback calculations');
+          // Fallback: use a reasonable default calculation
+          const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+          const estimatedDisplayedWidth = isMobile
+            ? Math.min(window.innerWidth - 40, 800) * pdfScale
+            : Math.min(window.innerWidth - 500, 1000) * pdfScale;
+
+          const scaleRatio = pdfDimensions.width / estimatedDisplayedWidth;
+
+          adjustedPosition = {
+            x: signaturePosition.x * scaleRatio,
+            y: signaturePosition.y * scaleRatio
+          };
+
+          adjustedSignatureSize = {
+            width: displayedWidth * scaleRatio,
+            height: displayedHeight * scaleRatio
+          };
+
+          console.log('Using fallback calculations:', {
+            originalPosition: signaturePosition,
+            adjustedPosition,
+            displayedSize: { width: displayedWidth, height: displayedHeight },
+            adjustedSize: adjustedSignatureSize,
+            scaleRatio,
+            estimatedDisplayedWidth,
+            pdfDimensions,
+            isMobile
+          });
+        } else {
+          const canvasRect = pdfCanvas.getBoundingClientRect();
+          const containerRect = pdfContainerRef.current.getBoundingClientRect();
+
+          const actualDisplayedWidth = canvasRect.width;
+          const actualDisplayedHeight = canvasRect.height;
+
+          // Calculate offset between container and canvas (in case there's padding/margin)
+          const offsetX = canvasRect.left - containerRect.left;
+          const offsetY = canvasRect.top - containerRect.top;
+
+          const scaleRatio = pdfDimensions.width / actualDisplayedWidth;
+
+          // Convert position to PDF coordinates (adjust for any offset first)
+          adjustedPosition = {
+            x: (signaturePosition.x - offsetX) * scaleRatio,
+            y: (signaturePosition.y - offsetY) * scaleRatio
+          };
+
+          // Convert signature size to PDF coordinates
+          adjustedSignatureSize = {
+            width: displayedWidth * scaleRatio,
+            height: displayedHeight * scaleRatio
+          };
+
+          console.log('Position and size conversion:', {
+            originalPosition: signaturePosition,
+            adjustedPosition,
+            displayedSize: { width: displayedWidth, height: displayedHeight },
+            adjustedSize: adjustedSignatureSize,
+            scaleRatio,
+            actualDisplayedWidth,
+            actualDisplayedHeight,
+            offset: { x: offsetX, y: offsetY },
+            canvasRect: { left: canvasRect.left, top: canvasRect.top, width: canvasRect.width, height: canvasRect.height },
+            containerRect: { left: containerRect.left, top: containerRect.top, width: containerRect.width, height: containerRect.height },
+            realPdfDimensions: pdfDimensions
+          });
         }
-
-        const canvasRect = pdfCanvas.getBoundingClientRect();
-        const containerRect = pdfContainerRef.current.getBoundingClientRect();
-
-        const actualDisplayedWidth = canvasRect.width;
-        const actualDisplayedHeight = canvasRect.height;
-
-        // Calculate offset between container and canvas (in case there's padding/margin)
-        const offsetX = canvasRect.left - containerRect.left;
-        const offsetY = canvasRect.top - containerRect.top;
-
-        const scaleRatio = pdfDimensions.width / actualDisplayedWidth;
-
-        // Convert position to PDF coordinates (adjust for any offset first)
-        adjustedPosition = {
-          x: (signaturePosition.x - offsetX) * scaleRatio,
-          y: (signaturePosition.y - offsetY) * scaleRatio
-        };
-
-        // Convert signature size to PDF coordinates
-        adjustedSignatureSize = {
-          width: displayedWidth * scaleRatio,
-          height: displayedHeight * scaleRatio
-        };
-
-        console.log('Position and size conversion:', {
-          originalPosition: signaturePosition,
-          adjustedPosition,
-          displayedSize: { width: displayedWidth, height: displayedHeight },
-          adjustedSize: adjustedSignatureSize,
-          scaleRatio,
-          actualDisplayedWidth,
-          actualDisplayedHeight,
-          offset: { x: offsetX, y: offsetY },
-          canvasRect: { left: canvasRect.left, top: canvasRect.top, width: canvasRect.width, height: canvasRect.height },
-          containerRect: { left: containerRect.left, top: containerRect.top, width: containerRect.width, height: containerRect.height },
-          realPdfDimensions: pdfDimensions
-        });
+      } else {
+        console.warn('pdfDimensions or pdfContainerRef not available, using default values');
       }
 
       // Sign the PDF (100% client-side with pdf-lib)
@@ -296,9 +342,35 @@ export function SignPageClient() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-120 bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
+    <div className="flex flex-col lg:flex-row h-screen overflow-hidden bg-gray-50">
+      {/* Mobile Tabs - Only visible on mobile */}
+      <div className="lg:hidden bg-white border-b border-gray-200">
+        <div className="flex">
+          <button
+            onClick={() => setMobileTab('prepare')}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              mobileTab === 'prepare'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Preparar
+          </button>
+          <button
+            onClick={() => setMobileTab('preview')}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              mobileTab === 'preview'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Vista Previa
+          </button>
+        </div>
+      </div>
+
+      {/* Sidebar - Always visible on desktop, conditionally on mobile */}
+      <div className={`${mobileTab === 'prepare' ? 'flex' : 'hidden'} lg:flex w-full lg:w-96 bg-white border-r border-gray-200 flex-col overflow-y-auto`}>
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">Firmar PDF</h1>
           {limitInfo && (
@@ -398,34 +470,35 @@ export function SignPageClient() {
         </div>
       </div>
 
-      {/* Main Content - PDF Viewer */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+      {/* Main Content - PDF Viewer - Always visible on desktop, conditionally on mobile */}
+      <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col overflow-hidden`}>
+        <div className="bg-white border-b border-gray-200 px-3 lg:px-6 py-3 lg:py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-0">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-base lg:text-lg font-semibold text-gray-900 truncate">
                 {pdfFile ? pdfFile.name : 'Vista previa del PDF'}
               </h2>
               {numPages && (
-                <p className="text-sm text-gray-600">
+                <p className="text-xs lg:text-sm text-gray-600">
                   Página {pageNumber} de {numPages}
                 </p>
               )}
             </div>
             {pdfFile && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 lg:gap-4 flex-wrap">
                 {/* Zoom controls */}
-                <div className="flex items-center gap-2 border-r pr-4">
+                <div className="flex items-center gap-1 lg:gap-2 lg:border-r lg:pr-4">
                   <Button
                     onClick={handleZoomOut}
                     disabled={pdfScale <= 0.5}
                     variant="outline"
                     size="sm"
                     title="Reducir zoom"
+                    className="h-8 w-8 p-0"
                   >
                     -
                   </Button>
-                  <span className="text-sm font-medium min-w-[4rem] text-center">
+                  <span className="text-xs lg:text-sm font-medium min-w-[3rem] lg:min-w-[4rem] text-center">
                     {Math.round(pdfScale * 100)}%
                   </span>
                   <Button
@@ -434,6 +507,7 @@ export function SignPageClient() {
                     variant="outline"
                     size="sm"
                     title="Aumentar zoom"
+                    className="h-8 w-8 p-0"
                   >
                     +
                   </Button>
@@ -442,19 +516,21 @@ export function SignPageClient() {
                     variant="outline"
                     size="sm"
                     title="Restablecer zoom"
+                    className="hidden lg:inline-flex"
                   >
                     100%
                   </Button>
                 </div>
 
                 {/* Page navigation */}
-                {numPages && (
-                  <div className="flex items-center gap-2">
+                {numPages && numPages > 1 && (
+                  <div className="flex items-center gap-1 lg:gap-2">
                     <Button
                       onClick={() => changePage(-1)}
                       disabled={pageNumber <= 1}
                       variant="outline"
                       size="sm"
+                      className="text-xs lg:text-sm"
                     >
                       Anterior
                     </Button>
@@ -463,6 +539,7 @@ export function SignPageClient() {
                       disabled={pageNumber >= numPages}
                       variant="outline"
                       size="sm"
+                      className="text-xs lg:text-sm"
                     >
                       Siguiente
                     </Button>
@@ -473,7 +550,7 @@ export function SignPageClient() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto bg-gray-100 p-6">
+        <div className="flex-1 overflow-auto bg-gray-100 p-3 lg:p-6">
           <div className="min-h-full flex items-start justify-center">
             {pdfFile ? (
               <div className="relative inline-block" ref={pdfContainerRef}>
@@ -486,7 +563,13 @@ export function SignPageClient() {
                     pageNumber={pageNumber}
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
-                    width={Math.min(window.innerWidth - 500, 1000) * pdfScale}
+                    width={
+                      typeof window !== 'undefined'
+                        ? window.innerWidth < 1024
+                          ? Math.min(window.innerWidth - 40, 800) * pdfScale // Mobile: full width minus padding
+                          : Math.min(window.innerWidth - 500, 1000) * pdfScale // Desktop: account for sidebar
+                        : 800 * pdfScale
+                    }
                   />
                 </Document>
 
@@ -508,10 +591,13 @@ export function SignPageClient() {
                 )}
               </div>
             ) : (
-              <div className="text-center p-12 text-gray-400">
-                <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">No hay PDF cargado</p>
-                <p className="text-sm">Selecciona un PDF desde el sidebar para comenzar</p>
+              <div className="text-center p-8 lg:p-12 text-gray-400">
+                <FileText className="w-12 h-12 lg:w-16 lg:h-16 mx-auto mb-4 opacity-50" />
+                <p className="text-base lg:text-lg font-medium">No hay PDF cargado</p>
+                <p className="text-xs lg:text-sm">
+                  <span className="lg:hidden">Ve a "Preparar" para seleccionar un PDF</span>
+                  <span className="hidden lg:inline">Selecciona un PDF desde el sidebar para comenzar</span>
+                </p>
               </div>
             )}
           </div>
