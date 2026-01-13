@@ -27,7 +27,7 @@ export function DraggableSignature({
   const signatureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMove = (clientX: number, clientY: number) => {
       if (!isDragging || !signatureRef.current) return;
 
       const container = signatureRef.current.parentElement?.parentElement;
@@ -35,8 +35,8 @@ export function DraggableSignature({
 
       const containerRect = container.getBoundingClientRect();
 
-      const newX = e.clientX - containerRect.left - dragOffset.x;
-      const newY = e.clientY - containerRect.top - dragOffset.y;
+      const newX = clientX - containerRect.left - dragOffset.x;
+      const newY = clientY - containerRect.top - dragOffset.y;
 
       // Keep signature within bounds
       const signatureWidth = signatureRef.current.offsetWidth * scale;
@@ -48,7 +48,18 @@ export function DraggableSignature({
       onPositionChange({ x: boundedX, y: boundedY });
     };
 
-    const handleMouseUp = () => {
+    const handleMouseMove = (e: MouseEvent) => {
+      handleMove(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        e.preventDefault(); // Prevent scrolling while dragging
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const handleEnd = () => {
       if (isDragging) {
         setIsDragging(false);
         onDragEnd?.();
@@ -57,12 +68,16 @@ export function DraggableSignature({
 
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mouseup', handleEnd);
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleEnd);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, [isDragging, dragOffset, onPositionChange, onDragEnd, scale]);
 
@@ -78,6 +93,23 @@ export function DraggableSignature({
     setDragOffset({
       x: e.clientX - containerRect.left - position.x,
       y: e.clientY - containerRect.top - position.y
+    });
+    setIsDragging(true);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (!signatureRef.current || e.touches.length === 0) return;
+
+    const container = signatureRef.current.parentElement?.parentElement;
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const touch = e.touches[0];
+
+    setDragOffset({
+      x: touch.clientX - containerRect.left - position.x,
+      y: touch.clientY - containerRect.top - position.y
     });
     setIsDragging(true);
   };
@@ -104,8 +136,10 @@ export function DraggableSignature({
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
+        touchAction: 'none', // Prevent default touch behavior
       }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
       title="Arrastra para posicionar la firma. Usa la rueda del mouse para cambiar el tamaño."
     >
       <div
@@ -129,18 +163,21 @@ export function DraggableSignature({
       </div>
 
       {/* Size controls overlay */}
-      <div className="absolute -top-8 left-0 right-0 flex justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
+      <div className="absolute -top-8 left-0 right-0 flex justify-center gap-1 lg:opacity-0 lg:hover:opacity-100 opacity-100 transition-opacity">
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleScaleChange('down');
           }}
-          className="bg-black/70 text-white px-2 py-1 rounded text-xs hover:bg-black"
+          onTouchStart={(e) => {
+            e.stopPropagation();
+          }}
+          className="bg-black/70 text-white px-3 py-1.5 rounded text-xs hover:bg-black touch-manipulation"
           type="button"
         >
           -
         </button>
-        <span className="bg-black/70 text-white px-2 py-1 rounded text-xs">
+        <span className="bg-black/70 text-white px-3 py-1.5 rounded text-xs">
           {Math.round(scale * 100)}%
         </span>
         <button
@@ -148,7 +185,10 @@ export function DraggableSignature({
             e.stopPropagation();
             handleScaleChange('up');
           }}
-          className="bg-black/70 text-white px-2 py-1 rounded text-xs hover:bg-black"
+          onTouchStart={(e) => {
+            e.stopPropagation();
+          }}
+          className="bg-black/70 text-white px-3 py-1.5 rounded text-xs hover:bg-black touch-manipulation"
           type="button"
         >
           +

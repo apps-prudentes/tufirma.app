@@ -1,6 +1,6 @@
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 import { db } from './index';
-import { profiles, signatures, type Profile, type Signature } from './schema';
+import { profiles, signatures, savedSignatures, type Profile, type Signature, type SavedSignature, type NewSavedSignature } from './schema';
 
 // Profile operations
 export async function getProfileById(id: string): Promise<Profile | undefined> {
@@ -76,4 +76,76 @@ export async function countSignatures(userId: string, startDate: Date, endDate: 
       )
     );
   return result.length;
+}
+
+// Saved Signatures operations (signature library)
+export async function getSavedSignatures(userId: string): Promise<SavedSignature[]> {
+  const result = await db
+    .select()
+    .from(savedSignatures)
+    .where(eq(savedSignatures.userId, userId as any))
+    .orderBy(savedSignatures.createdAt);
+  return result;
+}
+
+export async function getSavedSignatureById(id: string, userId: string): Promise<SavedSignature | undefined> {
+  const [signature] = await db
+    .select()
+    .from(savedSignatures)
+    .where(
+      and(
+        eq(savedSignatures.id, id as any),
+        eq(savedSignatures.userId, userId as any)
+      )
+    );
+  return signature;
+}
+
+export async function createSavedSignature(data: { userId: string; name: string; imageData: string }): Promise<SavedSignature> {
+  const [signature] = await db
+    .insert(savedSignatures)
+    .values({
+      userId: data.userId as any,
+      name: data.name,
+      imageData: data.imageData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+  return signature;
+}
+
+export async function updateSavedSignature(id: string, userId: string, data: { name?: string; imageData?: string }): Promise<SavedSignature> {
+  const updateData: any = { updatedAt: new Date() };
+
+  if (data.name !== undefined) {
+    updateData.name = data.name;
+  }
+
+  if (data.imageData !== undefined) {
+    updateData.imageData = data.imageData;
+  }
+
+  const [signature] = await db
+    .update(savedSignatures)
+    .set(updateData)
+    .where(
+      and(
+        eq(savedSignatures.id, id as any),
+        eq(savedSignatures.userId, userId as any)
+      )
+    )
+    .returning();
+  return signature;
+}
+
+export async function deleteSavedSignature(id: string, userId: string): Promise<void> {
+  await db
+    .delete(savedSignatures)
+    .where(
+      and(
+        eq(savedSignatures.id, id as any),
+        eq(savedSignatures.userId, userId as any)
+      )
+    );
 }
