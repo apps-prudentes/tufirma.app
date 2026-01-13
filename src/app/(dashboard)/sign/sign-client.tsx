@@ -298,7 +298,7 @@ export function SignPageClient() {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       {/* Sidebar */}
-      <div className="w-96 bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
+      <div className="w-120 bg-white border-r border-gray-200 flex flex-col overflow-y-auto">
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">Firmar PDF</h1>
           {limitInfo && (
@@ -490,22 +490,22 @@ export function SignPageClient() {
                   />
                 </Document>
 
-              {/* Draggable Signature Overlay */}
-              {isPlacingSignature && signatureImage && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="pointer-events-auto">
-                    <DraggableSignature
-                      signatureImage={signatureImage}
-                      position={signaturePosition}
-                      onPositionChange={handleSignaturePositionChange}
-                      scale={signatureScale}
-                      onScaleChange={handleSignatureScaleChange}
-                      onPage={pageNumber}
-                      onDragEnd={() => {}}
-                    />
+                {/* Draggable Signature Overlay */}
+                {isPlacingSignature && signatureImage && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="pointer-events-auto">
+                      <DraggableSignature
+                        signatureImage={signatureImage}
+                        position={signaturePosition}
+                        onPositionChange={handleSignaturePositionChange}
+                        scale={signatureScale}
+                        onScaleChange={handleSignatureScaleChange}
+                        onPage={pageNumber}
+                        onDragEnd={() => { }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               </div>
             ) : (
               <div className="text-center p-12 text-gray-400">

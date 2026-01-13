@@ -61,29 +61,31 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
             <SignatureCanvas
               ref={sigCanvas}
               penColor="black"
-              canvasProps={{ 
+              canvasProps={{
                 className: 'w-full h-64 bg-white',
-                style: { touchAction: 'none' } 
+                style: { touchAction: 'none' }
               }}
               onEnd={() => save()}
             />
           </div>
-          
-          <div className="flex space-x-2">
-            <Button type="button" variant="outline" onClick={clear}>
-              Limpiar
-            </Button>
-            <Button type="button" onClick={save}>
-              Guardar Firma
-            </Button>
+
+          <div className="space-y-2">
+            <div className="flex space-x-2">
+              <Button type="button" variant="outline" onClick={clear} className="flex-1">
+                Limpiar
+              </Button>
+              <Button type="button" onClick={save} className="flex-1">
+                Guardar Firma
+              </Button>
+            </div>
             {signature && (
-              <Button type="button" variant="secondary" onClick={download}>
+              <Button type="button" variant="secondary" onClick={download} className="w-full">
                 Descargar
               </Button>
             )}
           </div>
-          
-          {signature && (
+
+          {/* {signature && (
             <div className="mt-4">
               <h4 className="text-sm font-medium mb-2">Previsualización:</h4>
               <img 
@@ -92,7 +94,7 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
                 className="border rounded bg-white p-2 max-w-xs"
               />
             </div>
-          )}
+          )} */}
         </div>
       </CardContent>
     </Card>
