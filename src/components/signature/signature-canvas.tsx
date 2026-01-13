@@ -16,6 +16,10 @@ import { Save, Trash2, Library } from 'lucide-react';
 
 interface SignatureCanvasProps {
   onSignatureChange: (dataUrl: string) => void;
+  onPlaceSignature?: () => void;
+  isPlacingSignature?: boolean;
+  pdfFile?: File | null;
+  isLoading?: boolean;
 }
 
 interface SavedSignature {
@@ -25,7 +29,13 @@ interface SavedSignature {
   createdAt: string;
 }
 
-export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasProps) {
+export function SignatureCanvasComponent({
+  onSignatureChange,
+  onPlaceSignature,
+  isPlacingSignature = false,
+  pdfFile = null,
+  isLoading = false
+}: SignatureCanvasProps) {
   const [signature, setSignature] = useState<string | null>(null);
   const [savedSignatures, setSavedSignatures] = useState<SavedSignature[]>([]);
   const [isLoadingLibrary, setIsLoadingLibrary] = useState(false);
@@ -285,6 +295,19 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
                 Descargar
               </Button>
             </div>
+
+            {/* Place signature button - Only visible on mobile */}
+            {onPlaceSignature && (
+              <Button
+                type="button"
+                onClick={onPlaceSignature}
+                className="w-full lg:hidden"
+                variant={isPlacingSignature ? "default" : "outline"}
+                disabled={!pdfFile || !signature || isLoading}
+              >
+                {isPlacingSignature ? 'Ocultar firma' : 'Colocar firma en PDF'}
+              </Button>
+            )}
           </div>
 
       {/* {signature && (

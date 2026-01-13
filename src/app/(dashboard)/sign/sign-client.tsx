@@ -370,7 +370,7 @@ export function SignPageClient() {
       </div>
 
       {/* Sidebar - Always visible on desktop, conditionally on mobile */}
-      <div className={`${mobileTab === 'prepare' ? 'flex' : 'hidden'} lg:flex w-full lg:w-96 bg-white border-r border-gray-200 flex-col overflow-y-auto`}>
+      <div className={`${mobileTab === 'prepare' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[480px] bg-white border-r border-gray-200 flex-col overflow-y-auto`}>
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">Firmar PDF</h1>
           {limitInfo && (
@@ -428,7 +428,13 @@ export function SignPageClient() {
               <CardTitle className="text-lg">2. Crear Firma</CardTitle>
             </CardHeader>
             <CardContent>
-              <SignatureCanvasComponent onSignatureChange={handleSignatureChange} />
+              <SignatureCanvasComponent
+                onSignatureChange={handleSignatureChange}
+                onPlaceSignature={handlePlaceSignature}
+                isPlacingSignature={isPlacingSignature}
+                pdfFile={pdfFile}
+                isLoading={isLoading}
+              />
             </CardContent>
           </Card>
 
@@ -567,7 +573,7 @@ export function SignPageClient() {
                       typeof window !== 'undefined'
                         ? window.innerWidth < 1024
                           ? Math.min(window.innerWidth - 40, 800) * pdfScale // Mobile: full width minus padding
-                          : Math.min(window.innerWidth - 500, 1000) * pdfScale // Desktop: account for sidebar
+                          : Math.min(window.innerWidth - 550, 1000) * pdfScale // Desktop: account for wider sidebar (480px + padding)
                         : 800 * pdfScale
                     }
                   />
@@ -605,15 +611,6 @@ export function SignPageClient() {
           {/* Actions - Visible on mobile only, below PDF preview */}
           <div className="lg:hidden p-4 bg-white border-t border-gray-200">
             <div className="space-y-3">
-              <Button
-                onClick={handlePlaceSignature}
-                className="w-full"
-                variant={isPlacingSignature ? "default" : "outline"}
-                disabled={!pdfFile || !signatureImage || isLoading}
-              >
-                {isPlacingSignature ? 'Ocultar firma' : 'Colocar firma en PDF'}
-              </Button>
-
               <Button
                 onClick={handleExportPDF}
                 className="w-full"
