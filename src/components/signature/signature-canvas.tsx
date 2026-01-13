@@ -282,7 +282,7 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
                 className="flex-1 min-w-0"
                 disabled={!signature}
               >
-                Guardar Firma
+                Descargar
               </Button>
             </div>
           </div>

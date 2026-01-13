@@ -432,8 +432,8 @@ export function SignPageClient() {
             </CardContent>
           </Card>
 
-          {/* Actions */}
-          <Card>
+          {/* Actions - Hidden on mobile, visible on desktop */}
+          <Card className="hidden lg:block">
             <CardHeader>
               <CardTitle className="text-lg">3. Firmar</CardTitle>
             </CardHeader>
@@ -600,6 +600,39 @@ export function SignPageClient() {
                 </p>
               </div>
             )}
+          </div>
+
+          {/* Actions - Visible on mobile only, below PDF preview */}
+          <div className="lg:hidden p-4 bg-white border-t border-gray-200">
+            <div className="space-y-3">
+              <Button
+                onClick={handlePlaceSignature}
+                className="w-full"
+                variant={isPlacingSignature ? "default" : "outline"}
+                disabled={!pdfFile || !signatureImage || isLoading}
+              >
+                {isPlacingSignature ? 'Ocultar firma' : 'Colocar firma en PDF'}
+              </Button>
+
+              <Button
+                onClick={handleExportPDF}
+                className="w-full"
+                disabled={!pdfFile || !signatureImage || isLoading || (limitInfo ? !limitInfo.canSign : false)}
+              >
+                {isLoading ? `Exportando... ${progress}%` : 'Exportar PDF firmado'}
+              </Button>
+
+              {isLoading && (
+                <div className="space-y-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
