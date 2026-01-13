@@ -5,13 +5,6 @@ import SignatureCanvas from 'react-signature-canvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -157,31 +150,25 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
   }, [signature]);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Firmar Aquí</CardTitle>
-        <CardDescription>Dibuja tu firma en el espacio a continuación</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-            <SignatureCanvas
-              ref={sigCanvas}
-              penColor="black"
-              canvasProps={{
-                className: 'w-full h-64 bg-white',
-                style: { touchAction: 'none' }
-              }}
-              onEnd={() => save()}
-            />
-          </div>
+    <div className="w-full space-y-4">
+      <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+        <SignatureCanvas
+          ref={sigCanvas}
+          penColor="black"
+          canvasProps={{
+            className: 'w-full h-64 bg-white',
+            style: { touchAction: 'none' }
+          }}
+          onEnd={() => save()}
+        />
+      </div>
 
           <div className="space-y-2">
             {/* Library and Save to Library buttons */}
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2">
               <Dialog open={libraryDialogOpen} onOpenChange={setLibraryDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button type="button" variant="outline" className="flex-1">
+                  <Button type="button" variant="outline" className="flex-1 min-w-0">
                     <Library className="w-4 h-4 mr-2" />
                     Biblioteca
                   </Button>
@@ -240,9 +227,9 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
               {signature && (
                 <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button type="button" variant="outline" className="flex-1">
+                    <Button type="button" variant="outline" className="flex-1 min-w-0">
                       <Save className="w-4 h-4 mr-2" />
-                      Guardar en Biblioteca
+                      Guardar
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -285,33 +272,31 @@ export function SignatureCanvasComponent({ onSignatureChange }: SignatureCanvasP
             </div>
 
             {/* Canvas action buttons */}
-            <div className="flex space-x-2">
-              <Button type="button" variant="outline" onClick={clear} className="flex-1">
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={clear} className="flex-1 min-w-0">
                 Limpiar
               </Button>
-              <Button type="button" onClick={save} className="flex-1">
+              <Button
+                type="button"
+                onClick={download}
+                className="flex-1 min-w-0"
+                disabled={!signature}
+              >
                 Guardar Firma
               </Button>
             </div>
-            {signature && (
-              <Button type="button" variant="secondary" onClick={download} className="w-full">
-                Descargar
-              </Button>
-            )}
           </div>
 
-          {/* {signature && (
-            <div className="mt-4">
-              <h4 className="text-sm font-medium mb-2">Previsualización:</h4>
-              <img 
-                src={signature} 
-                alt="Signature preview" 
-                className="border rounded bg-white p-2 max-w-xs"
-              />
-            </div>
-          )} */}
+      {/* {signature && (
+        <div className="mt-4">
+          <h4 className="text-sm font-medium mb-2">Previsualización:</h4>
+          <img
+            src={signature}
+            alt="Signature preview"
+            className="border rounded bg-white p-2 max-w-xs"
+          />
         </div>
-      </CardContent>
-    </Card>
+      )} */}
+    </div>
   );
 }
