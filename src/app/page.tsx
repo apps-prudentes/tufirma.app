@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { FileSignature, CheckCircle2, Zap, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,8 +15,16 @@ export default async function Home() {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FileSignature className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">SignPDF</span>
+            <Link href="/">
+              <Image
+                src="/logo1.png"
+                alt="SignPDF Logo"
+                width={240}
+                height={80}
+                className="h-25 w-auto cursor-pointer"
+                unoptimized
+              />
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             {user ? (

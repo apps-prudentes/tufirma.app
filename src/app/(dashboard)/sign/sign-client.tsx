@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import Image from 'next/image';
+import Link from 'next/link';
 import { SignatureCanvasComponent } from '@/components/signature/signature-canvas';
 import { DraggableSignature } from '@/components/signature/draggable-signature';
 import { Button } from '@/components/ui/button';
@@ -348,21 +350,19 @@ export function SignPageClient() {
         <div className="flex">
           <button
             onClick={() => setMobileTab('prepare')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-              mobileTab === 'prepare'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${mobileTab === 'prepare'
+              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
           >
             Preparar
           </button>
           <button
             onClick={() => setMobileTab('preview')}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-              mobileTab === 'preview'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${mobileTab === 'preview'
+              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
           >
             Vista Previa
           </button>
@@ -372,7 +372,16 @@ export function SignPageClient() {
       {/* Sidebar - Always visible on desktop, conditionally on mobile */}
       <div className={`${mobileTab === 'prepare' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[480px] bg-white border-r border-gray-200 flex-col overflow-y-auto`}>
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-900">Firmar PDF</h1>
+          <Link href="/">
+            <Image
+              src="/logo2.png"
+              alt="Logo"
+              width={150}
+              height={50}
+              className="h-12 w-auto cursor-pointer"
+              unoptimized
+            />
+          </Link>
           {limitInfo && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
