@@ -296,12 +296,12 @@ export function SignatureCanvasComponent({
               </Button>
             </div>
 
-            {/* Place signature button - Only visible on mobile */}
+            {/* Place signature button */}
             {onPlaceSignature && (
               <Button
                 type="button"
                 onClick={onPlaceSignature}
-                className="w-full lg:hidden"
+                className="w-full"
                 variant={isPlacingSignature ? "default" : "outline"}
                 disabled={!pdfFile || !signature || isLoading}
               >
