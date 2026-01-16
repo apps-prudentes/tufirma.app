@@ -66,12 +66,12 @@ export default function UpgradePage() {
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Free Plan Card */}
-          <Card>
+          <Card className="flex flex-col">
             <CardHeader>
               <CardTitle>Free</CardTitle>
               <CardDescription>Plan básico</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1">
               <div className="space-y-2">
                 <p className="text-2xl font-bold">$0<span className="text-sm text-gray-500">/semana</span></p>
                 <ul className="space-y-1 mt-4">
@@ -95,12 +95,12 @@ export default function UpgradePage() {
           </Card>
 
           {/* Basic Plan Card */}
-          <Card>
+          <Card className="flex flex-col">
             <CardHeader>
               <CardTitle>Básico</CardTitle>
               <CardDescription>Plan intermedio</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1">
               <div className="space-y-2">
                 <p className="text-2xl font-bold">$15<span className="text-sm text-gray-500">/mes</span></p>
                 <ul className="space-y-1 mt-4">
@@ -131,12 +131,12 @@ export default function UpgradePage() {
           </Card>
 
           {/* Premium Plan Card */}
-          <Card className="border-2 border-blue-500">
+          <Card className="border-2 border-blue-500 flex flex-col">
             <CardHeader>
               <CardTitle className="text-blue-600">Premium</CardTitle>
               <CardDescription>Plan avanzado</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1">
               <div className="space-y-2">
                 <p className="text-2xl font-bold">$95<span className="text-sm text-gray-500">/mes</span></p>
                 <ul className="space-y-1 mt-4">

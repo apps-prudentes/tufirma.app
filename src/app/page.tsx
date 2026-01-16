@@ -220,7 +220,7 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 max-w-6xl mx-auto">
-          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+          <Card className="flex flex-col border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
             <CardHeader className="space-y-4">
               <CardTitle className="text-3xl">Plan Free</CardTitle>
               <CardDescription className="space-y-1">
@@ -228,7 +228,7 @@ export default async function Home() {
                 <div className="text-base text-gray-600">por mes</div>
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 flex-1">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -255,7 +255,7 @@ export default async function Home() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+          <Card className="flex flex-col border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
             <CardHeader className="space-y-4">
               <CardTitle className="text-3xl">Plan Básico</CardTitle>
               <CardDescription className="space-y-1">
@@ -263,7 +263,7 @@ export default async function Home() {
                 <div className="text-base text-gray-600">por mes</div>
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 flex-1">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -290,7 +290,7 @@ export default async function Home() {
             </CardContent>
           </Card>
 
-          <Card className="relative border-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+          <Card className="relative flex flex-col border-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
@@ -307,7 +307,7 @@ export default async function Home() {
                 <div className="text-base text-blue-100">por mes</div>
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 relative z-10">
+            <CardContent className="space-y-6 relative z-10 flex-1">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mt-0.5">
