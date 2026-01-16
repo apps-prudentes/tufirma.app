@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileSignature, TrendingUp, Calendar, Settings, ArrowRight, Sparkles } from 'lucide-react';
@@ -67,6 +68,20 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
       <div className="container mx-auto px-4 py-8">
+        {/* Logo */}
+        <div className="mb-8">
+          <Link href="/">
+            <Image
+              src="/logo2.png"
+              alt="Logo"
+              width={150}
+              height={50}
+              className="h-12 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
+              unoptimized
+            />
+          </Link>
+        </div>
+
         {/* Header con animación */}
         <div className="mb-12 animate-fade-in-up">
           <div className="flex items-center gap-3 mb-4">
@@ -127,7 +142,7 @@ export default function DashboardPage() {
                     asChild
                   >
                     <Link href="/upgrade" className="gap-2">
-                      Mejorar a Premium
+                      Elegir tu plan
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>

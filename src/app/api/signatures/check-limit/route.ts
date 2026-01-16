@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       maxSignatures = 1;
       period = 'week';
       signaturesCount = await countSignatures(user.id, startOfCurrentWeek, endOfCurrentWeek);
-    } else if (plan === 'BASIC') {
+    } else if (plan === 'BASICO') {
       // BASIC plan: 7 signatures per month
       maxSignatures = 7;
       period = 'month';

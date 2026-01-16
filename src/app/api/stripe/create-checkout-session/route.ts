@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     // Validate plan and get the corresponding price ID
     let priceId: string | undefined;
-    if (plan === 'BASIC') {
+    if (plan === 'BASICO') {
       priceId = process.env.STRIPE_BASIC_PRICE_ID;
     } else if (plan === 'PREMIUM') {
       priceId = process.env.STRIPE_PREMIUM_PRICE_ID;

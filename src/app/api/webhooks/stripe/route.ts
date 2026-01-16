@@ -38,13 +38,25 @@ export async function POST(req: NextRequest) {
         {
           const session = event.data.object as Stripe.Checkout.Session;
           const userId = session.metadata?.userId;
+          const plan = session.metadata?.plan || 'PREMIUM';
+
+          console.log('=== CHECKOUT SESSION COMPLETED ===');
+          console.log('Session ID:', session.id);
+          console.log('User ID:', userId);
+          console.log('Customer ID:', session.customer);
+          console.log('Plan from metadata:', plan);
+          console.log('Full metadata:', session.metadata);
 
           if (userId && session.customer) {
-            // Update profile's plan to PREMIUM and save customer ID
-            await updateProfile(userId, {
-              plan: 'PREMIUM',
+            // Update profile's plan based on what was purchased and save customer ID
+            console.log('Updating profile with plan:', plan);
+            const result = await updateProfile(userId, {
+              plan: plan,
               stripeCustomerId: session.customer as string
             });
+            console.log('Profile updated:', result);
+          } else {
+            console.log('Missing userId or session.customer');
           }
         }
         break;
@@ -55,17 +67,44 @@ export async function POST(req: NextRequest) {
           const subscription = event.data.object as Stripe.Subscription;
           const customerId = subscription.customer as string;
 
+          console.log('=== SUBSCRIPTION', event.type.toUpperCase(), '===');
+          console.log('Subscription ID:', subscription.id);
+          console.log('Customer ID:', customerId);
+          console.log('Subscription status:', subscription.status);
+
           // Find profile by stripeCustomerId
           const profile = await getProfileByStripeCustomerId(customerId);
+
+          console.log('Profile found:', profile ? profile.id : 'NOT FOUND');
 
           if (profile) {
             // Determine if the subscription is active
             const isActive = subscription.status === 'active' || subscription.status === 'trialing';
 
-            // Update profile's plan based on subscription status
-            await updateProfile(profile.id, {
-              plan: isActive ? 'PREMIUM' : 'FREE'
-            });
+            console.log('Is active:', isActive);
+
+            if (isActive && subscription.items.data.length > 0) {
+              // Get the price ID to determine the plan
+              const priceId = subscription.items.data[0].price.id;
+              const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID;
+              const premiumPriceId = process.env.STRIPE_PREMIUM_PRICE_ID;
+
+              console.log('Price ID from subscription:', priceId);
+              console.log('STRIPE_BASIC_PRICE_ID:', basicPriceId);
+              console.log('STRIPE_PREMIUM_PRICE_ID:', premiumPriceId);
+
+              let plan = 'PREMIUM'; // Default to PREMIUM
+              if (priceId === basicPriceId) {
+                plan = 'BASICO';
+              }
+
+              console.log('Setting plan to:', plan);
+              await updateProfile(profile.id, { plan });
+            } else {
+              // Subscription not active, downgrade to FREE
+              console.log('Subscription not active, setting to FREE');
+              await updateProfile(profile.id, { plan: 'FREE' });
+            }
           }
         }
         break;

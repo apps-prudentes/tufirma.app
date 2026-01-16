@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -40,8 +42,22 @@ export default function UpgradePage() {
 
   return (
     <div className="container mx-auto py-8">
+      {/* Logo */}
+      <div className="mb-8">
+        <Link href="/">
+          <Image
+            src="/logo2.png"
+            alt="Logo"
+            width={150}
+            height={50}
+            className="h-12 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
+            unoptimized
+          />
+        </Link>
+      </div>
+
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Mejorar a Premium</h1>
+        <h1 className="text-3xl font-bold">Elegir tu plan</h1>
         <div>
           <UserAccountNav />
         </div>
@@ -106,7 +122,7 @@ export default function UpgradePage() {
             <CardFooter>
               <Button
                 className="w-full bg-amber-600 hover:bg-amber-700"
-                onClick={() => handleUpgrade('BASIC')}
+                onClick={() => handleUpgrade('BASICO')}
                 disabled={loading}
               >
                 {loading ? 'Procesando...' : 'Mejorar a Básico'}

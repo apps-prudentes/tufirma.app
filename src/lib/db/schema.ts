@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, pgEnum, uuid } from 'drizzle-orm/pg-core';
 
-export const planEnum = pgEnum('plan', ['FREE', 'BASIC', 'PREMIUM']);
+export const planEnum = pgEnum('plan', ['FREE', 'BASICO', 'PREMIUM']);
 
 // Supabase Auth creates auth.users automatically
 // We create a profiles table that references it
