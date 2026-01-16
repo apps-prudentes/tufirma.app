@@ -219,7 +219,7 @@ export default async function Home() {
           <p className="mt-4 text-lg md:text-xl text-gray-600">Elige el plan que mejor se adapte a tus necesidades</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 max-w-6xl mx-auto">
           <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
             <CardHeader className="space-y-4">
               <CardTitle className="text-3xl">Plan Free</CardTitle>
@@ -255,6 +255,41 @@ export default async function Home() {
             </CardContent>
           </Card>
 
+          <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+            <CardHeader className="space-y-4">
+              <CardTitle className="text-3xl">Plan Básico</CardTitle>
+              <CardDescription className="space-y-1">
+                <div className="text-5xl font-bold text-gray-900">$15</div>
+                <div className="text-base text-gray-600">por mes</div>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <span className="text-gray-700">7 firmas por mes</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <span className="text-gray-700">Procesamiento en el navegador</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <span className="text-gray-700">100% seguro y privado</span>
+                </li>
+              </ul>
+              <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white transition-all duration-300" asChild size="lg">
+                <Link href={user ? "/upgrade" : "/sign-up"}>Mejorar a Básico</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card className="relative border-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -268,7 +303,7 @@ export default async function Home() {
                 </span>
               </div>
               <CardDescription className="space-y-1">
-                <div className="text-5xl font-bold text-white">$5</div>
+                <div className="text-5xl font-bold text-white">$95</div>
                 <div className="text-base text-blue-100">por mes</div>
               </CardDescription>
             </CardHeader>

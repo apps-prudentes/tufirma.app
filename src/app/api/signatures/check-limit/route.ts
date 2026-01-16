@@ -30,13 +30,23 @@ export async function GET(req: NextRequest) {
 
     // Count signatures in the current period based on the user's plan
     let signaturesCount = 0;
-    let maxSignatures = plan === 'PREMIUM' ? 50 : 1;
+    let maxSignatures = 1;
+    let period = 'week';
 
     if (plan === 'FREE') {
       // FREE plan: 1 signature per week
+      maxSignatures = 1;
+      period = 'week';
       signaturesCount = await countSignatures(user.id, startOfCurrentWeek, endOfCurrentWeek);
+    } else if (plan === 'BASIC') {
+      // BASIC plan: 7 signatures per month
+      maxSignatures = 7;
+      period = 'month';
+      signaturesCount = await countSignatures(user.id, startOfCurrentMonth, endOfCurrentMonth);
     } else if (plan === 'PREMIUM') {
       // PREMIUM plan: 50 signatures per month
+      maxSignatures = 50;
+      period = 'month';
       signaturesCount = await countSignatures(user.id, startOfCurrentMonth, endOfCurrentMonth);
     }
 
@@ -49,7 +59,7 @@ export async function GET(req: NextRequest) {
       signaturesCount,
       maxSignatures,
       plan,
-      period: plan === 'FREE' ? 'week' : 'month',
+      period,
     }, { status: 200 });
   } catch (error) {
     console.error('Error checking signature limit:', error);

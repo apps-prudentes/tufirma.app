@@ -10,19 +10,23 @@ export default function UpgradePage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (plan: string) => {
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Error creating checkout session');
       }
-      
+
       const { url } = await response.json();
 
       // Redirect to Stripe checkout
@@ -42,9 +46,9 @@ export default function UpgradePage() {
           <UserAccountNav />
         </div>
       </div>
-      
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Free Plan Card */}
           <Card>
             <CardHeader>
@@ -73,7 +77,43 @@ export default function UpgradePage() {
               </Button>
             </CardFooter>
           </Card>
-          
+
+          {/* Basic Plan Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Básico</CardTitle>
+              <CardDescription>Plan intermedio</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="text-2xl font-bold">$15<span className="text-sm text-gray-500">/mes</span></p>
+                <ul className="space-y-1 mt-4">
+                  <li className="flex items-center">
+                    <span className="mr-2">✓</span> 7 firmas por mes
+                  </li>
+                  <li className="flex items-center">
+                    <span className="mr-2">✓</span> Funcionalidad completa
+                  </li>
+                  <li className="flex items-center text-gray-400">
+                    <span className="mr-2">✗</span> Soporte prioritario
+                  </li>
+                  <li className="flex items-center text-gray-400">
+                    <span className="mr-2">✗</span> Acceso a nuevas características
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="w-full bg-amber-600 hover:bg-amber-700"
+                onClick={() => handleUpgrade('BASIC')}
+                disabled={loading}
+              >
+                {loading ? 'Procesando...' : 'Mejorar a Básico'}
+              </Button>
+            </CardFooter>
+          </Card>
+
           {/* Premium Plan Card */}
           <Card className="border-2 border-blue-500">
             <CardHeader>
@@ -82,7 +122,7 @@ export default function UpgradePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="text-2xl font-bold">$5<span className="text-sm text-gray-500">/mes</span></p>
+                <p className="text-2xl font-bold">$95<span className="text-sm text-gray-500">/mes</span></p>
                 <ul className="space-y-1 mt-4">
                   <li className="flex items-center">
                     <span className="mr-2">✓</span> 50 firmas por mes
@@ -100,9 +140,9 @@ export default function UpgradePage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700" 
-                onClick={handleUpgrade}
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                onClick={() => handleUpgrade('PREMIUM')}
                 disabled={loading}
               >
                 {loading ? 'Procesando...' : 'Mejorar a Premium'}
@@ -110,7 +150,7 @@ export default function UpgradePage() {
             </CardFooter>
           </Card>
         </div>
-        
+
         <div className="mt-12">
           <h2 className="text-2xl font-semibold mb-4">¿Por qué mejorar a Premium?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
