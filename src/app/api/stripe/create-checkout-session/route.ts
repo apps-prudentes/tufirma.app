@@ -22,6 +22,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get the plan from request body
+    const body = await req.json();
+    const plan = body.plan || 'PREMIUM';
+
+    // Validate plan and get the corresponding price ID
+    let priceId: string | undefined;
+    if (plan === 'BASIC') {
+      priceId = process.env.STRIPE_BASIC_PRICE_ID;
+    } else if (plan === 'PREMIUM') {
+      priceId = process.env.STRIPE_PREMIUM_PRICE_ID;
+    } else {
+      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
+    }
+
+    if (!priceId) {
+      return NextResponse.json({ error: `Price ID for ${plan} plan not configured` }, { status: 500 });
+    }
+
     // Get or create profile
     let profile = await getProfileById(user.id);
     if (!profile) {
@@ -47,11 +65,11 @@ export async function POST(req: NextRequest) {
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'subscription', // Premium plan is a subscription
+      mode: 'subscription',
       customer: stripeCustomerId,
       line_items: [
         {
-          price: process.env.STRIPE_PREMIUM_PRICE_ID, // This should be set in your .env
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -59,6 +77,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
       metadata: {
         userId: user.id,
+        plan: plan,
       },
     });
 
