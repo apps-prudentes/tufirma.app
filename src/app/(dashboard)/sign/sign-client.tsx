@@ -53,8 +53,7 @@ export function SignPageClient() {
         // Set default values if limit check fails
         setLimitInfo({
           canSign: true,
-          remaining: 1,
-          plan: 'FREE'
+          remaining: 1
         });
       }
     };
