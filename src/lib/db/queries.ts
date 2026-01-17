@@ -1,6 +1,20 @@
-import { eq, and, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, gte, lte, sql, desc } from 'drizzle-orm';
 import { db } from './index';
-import { profiles, signatures, savedSignatures, type Profile, type Signature, type SavedSignature, type NewSavedSignature } from './schema';
+import {
+  profiles,
+  signatures,
+  savedSignatures,
+  creditPackages,
+  userCredits,
+  creditTransactions,
+  type Profile,
+  type Signature,
+  type SavedSignature,
+  type NewSavedSignature,
+  type CreditPackage,
+  type UserCredit,
+  type CreditTransaction,
+} from './schema';
 
 // Profile operations
 export async function getProfileById(id: string): Promise<Profile | undefined> {
@@ -148,4 +162,142 @@ export async function deleteSavedSignature(id: string, userId: string): Promise<
         eq(savedSignatures.userId, userId as any)
       )
     );
+}
+
+// ============ Credit Packages operations ============
+
+export async function getCreditPackages(): Promise<CreditPackage[]> {
+  const result = await db
+    .select()
+    .from(creditPackages)
+    .where(eq(creditPackages.isActive, true))
+    .orderBy(creditPackages.order);
+  return result;
+}
+
+export async function getCreditPackageById(id: string): Promise<CreditPackage | undefined> {
+  const [pkg] = await db
+    .select()
+    .from(creditPackages)
+    .where(eq(creditPackages.id, id));
+  return pkg;
+}
+
+// ============ User Credits operations ============
+
+export async function getUserCredits(userId: string): Promise<UserCredit | undefined> {
+  const [credits] = await db
+    .select()
+    .from(userCredits)
+    .where(eq(userCredits.userId, userId as any));
+  return credits;
+}
+
+export async function getOrCreateUserCredits(userId: string): Promise<UserCredit> {
+  let credits = await getUserCredits(userId);
+  if (!credits) {
+    const [newCredits] = await db
+      .insert(userCredits)
+      .values({
+        userId: userId as any,
+        balance: 1, // 1 free signature per week
+      })
+      .returning();
+    return newCredits;
+  }
+  return credits;
+}
+
+export async function addCredits(
+  userId: string,
+  amount: number,
+  description: string,
+  relatedPaymentId?: string
+): Promise<CreditTransaction> {
+  try {
+    // Get current balance
+    const userCredit = await getOrCreateUserCredits(userId);
+    console.log(`[addCredits] Current balance for ${userId}:`, userCredit.balance);
+
+    const newBalance = userCredit.balance + amount;
+    console.log(`[addCredits] New balance will be:`, newBalance);
+
+    // Update balance
+    const updateResult = await db
+      .update(userCredits)
+      .set({ balance: newBalance, updatedAt: new Date() })
+      .where(eq(userCredits.userId, userId as any))
+      .returning();
+
+    console.log(`[addCredits] Balance updated. Rows affected:`, updateResult.length);
+
+    if (updateResult.length === 0) {
+      throw new Error('Failed to update user credits balance - no rows updated');
+    }
+
+    // Create transaction record
+    const [transaction] = await db
+      .insert(creditTransactions)
+      .values({
+        userId: userId as any,
+        type: 'purchase',
+        amount,
+        description,
+        relatedPaymentId,
+        balance: newBalance,
+      })
+      .returning();
+
+    console.log(`[addCredits] Transaction recorded:`, transaction.id);
+
+    if (!transaction) {
+      throw new Error('Failed to create transaction record');
+    }
+
+    return transaction;
+  } catch (error) {
+    console.error(`[addCredits] ERROR:`, error);
+    throw error;
+  }
+}
+
+export async function useCredits(
+  userId: string,
+  amount: number,
+  relatedSignatureId: string
+): Promise<CreditTransaction> {
+  // Get current balance
+  const userCredit = await getOrCreateUserCredits(userId);
+  const newBalance = Math.max(0, userCredit.balance - amount);
+
+  // Update balance
+  await db
+    .update(userCredits)
+    .set({ balance: newBalance, updatedAt: new Date() })
+    .where(eq(userCredits.userId, userId as any));
+
+  // Create transaction record
+  const [transaction] = await db
+    .insert(creditTransactions)
+    .values({
+      userId: userId as any,
+      type: 'use',
+      amount: -amount,
+      description: `Firma en PDF`,
+      relatedSignatureId: relatedSignatureId as any,
+      balance: newBalance,
+    })
+    .returning();
+
+  return transaction;
+}
+
+export async function getCreditHistory(userId: string, limit: number = 50): Promise<CreditTransaction[]> {
+  const result = await db
+    .select()
+    .from(creditTransactions)
+    .where(eq(creditTransactions.userId, userId as any))
+    .orderBy(desc(creditTransactions.createdAt))
+    .limit(limit);
+  return result;
 }

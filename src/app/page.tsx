@@ -285,7 +285,7 @@ export default async function Home() {
                 </li>
               </ul>
               <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white transition-all duration-300" asChild size="lg">
-                <Link href={user ? "/upgrade" : "/sign-up"}>Mejorar a Básico</Link>
+                <Link href={user ? "/shop" : "/sign-up"}>Mejorar a Básico</Link>
               </Button>
             </CardContent>
           </Card>
@@ -339,7 +339,7 @@ export default async function Home() {
                 asChild
                 size="lg"
               >
-                <Link href={user ? "/upgrade" : "/sign-up"}>Mejorar a Premium</Link>
+                <Link href={user ? "/shop" : "/sign-up"}>Mejorar a Premium</Link>
               </Button>
             </CardContent>
           </Card>

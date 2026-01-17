@@ -26,7 +26,7 @@ export function SignPageClient() {
   const [isPlacingSignature, setIsPlacingSignature] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [limitInfo, setLimitInfo] = useState<{ canSign: boolean; remaining: number; plan: string } | null>(null);
+  const [limitInfo, setLimitInfo] = useState<{ canSign: boolean; remaining: number } | null>(null);
   const [pdfScale, setPdfScale] = useState(1); // Zoom level for PDF viewer
   const [mobileTab, setMobileTab] = useState<'prepare' | 'preview'>('prepare'); // Tab state for mobile
 
@@ -46,8 +46,7 @@ export function SignPageClient() {
         const limitData = await checkSignatureLimit();
         setLimitInfo({
           canSign: limitData.canSign,
-          remaining: limitData.remaining,
-          plan: limitData.plan
+          remaining: limitData.remaining
         });
       } catch (error) {
         console.error('Error loading limit info:', error);
@@ -157,22 +156,22 @@ export function SignPageClient() {
       return;
     }
 
-    // Try to check signature limit (optional - won't block export if it fails)
+    // Check if user has sufficient credits
     try {
       const limitData = await checkSignatureLimit();
       setLimitInfo({
         canSign: limitData.canSign,
-        remaining: limitData.remaining,
-        plan: limitData.plan
+        remaining: limitData.remaining
       });
 
       if (!limitData.canSign) {
-        const proceed = confirm(`Has alcanzado tu límite de firmas (${limitData.maxSignatures} por ${limitData.period}). ¿Deseas continuar de todas formas?`);
-        if (!proceed) return;
+        alert('No tienes créditos disponibles. Por favor compra más firmas.');
+        return;
       }
     } catch (error) {
-      console.warn('Could not check signature limit (continuing anyway):', error);
-      // Continue with export even if limit check fails
+      console.warn('Could not check credits:', error);
+      alert('Error verificando tus créditos. Por favor intenta de nuevo.');
+      return;
     }
 
     // On mobile, switch to preview tab so the PDF canvas is rendered and we can get accurate measurements
@@ -315,19 +314,23 @@ export function SignPageClient() {
 
       setProgress(100);
 
-      // Try to register the signature (optional - won't affect the export)
+      // Register the signature and deduct credits
       try {
         await registerSignature(pdfFile.name);
         // Update the displayed limit info after successful registration
         const updatedLimitData = await checkSignatureLimit();
         setLimitInfo({
           canSign: updatedLimitData.canSign,
-          remaining: updatedLimitData.remaining,
-          plan: updatedLimitData.plan
+          remaining: updatedLimitData.remaining
         });
-      } catch (registrationError) {
-        console.warn('Could not register signature in database:', registrationError);
-        // Export still succeeded - just couldn't track it in DB
+      } catch (registrationError: any) {
+        console.error('Error registering signature:', registrationError);
+        // Check if it was a 402 (insufficient credits) error
+        if (registrationError.message?.includes('Insufficient credits')) {
+          alert('No hay suficientes créditos para esta firma. Por favor compra más.');
+        } else {
+          console.warn('Could not register signature in database:', registrationError);
+        }
       }
 
       // Reset loading after a short delay
