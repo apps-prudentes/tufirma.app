@@ -4,10 +4,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { FileSignature, CheckCircle2, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getCreditPackages } from "@/lib/db/queries";
+
+interface CreditPackage {
+  id: string;
+  name: string;
+  price: string;
+  creditAmount: number;
+  description?: string;
+}
 
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  let packages: CreditPackage[] = [];
+  try {
+    packages = await getCreditPackages();
+  } catch (error) {
+    console.error('Error fetching packages:', error);
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
@@ -128,15 +144,15 @@ export default async function Home() {
           >
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span>100% Seguro</span>
+              <span>No guardamos documentos</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span>Sin instalación</span>
+              <span>1 Firma gratis por semana</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span>Gratis para empezar</span>
+              <span>Sin pruebas engorrosas</span>
             </div>
           </div>
         </div>
@@ -220,129 +236,101 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 max-w-6xl mx-auto">
-          <Card className="flex flex-col border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-            <CardHeader className="space-y-4">
-              <CardTitle className="text-3xl">Plan Free</CardTitle>
-              <CardDescription className="space-y-1">
-                <div className="text-5xl font-bold text-gray-900">$0</div>
-                <div className="text-base text-gray-600">por mes</div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 flex-1">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  </div>
-                  <span className="text-gray-700">1 firma por semana</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  </div>
-                  <span className="text-gray-700">Procesamiento en el navegador</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  </div>
-                  <span className="text-gray-700">100% seguro y privado</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-transparent" variant="outline" asChild size="lg">
-                <Link href={user ? "/sign" : "/sign-up"}>Comenzar Gratis</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          {packages.map((pkg) => {
+            const isPopular = pkg.name === 'Bolsa Popular';
+            const index = packages.indexOf(pkg);
 
-          <Card className="flex flex-col border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-            <CardHeader className="space-y-4">
-              <CardTitle className="text-3xl">Plan Básico</CardTitle>
-              <CardDescription className="space-y-1">
-                <div className="text-5xl font-bold text-gray-900">$15</div>
-                <div className="text-base text-gray-600">por mes</div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 flex-1">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <span className="text-gray-700">7 firmas por mes</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <span className="text-gray-700">Procesamiento en el navegador</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <span className="text-gray-700">100% seguro y privado</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white transition-all duration-300" asChild size="lg">
-                <Link href={user ? "/shop" : "/sign-up"}>Mejorar a Básico</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="relative flex flex-col border-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40 transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-
-            <CardHeader className="space-y-4 relative z-10">
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-3xl text-white">Plan Premium</CardTitle>
-                <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 whitespace-nowrap">
-                  <Sparkles className="h-3 w-3" />
-                  Popular
-                </span>
-              </div>
-              <CardDescription className="space-y-1">
-                <div className="text-5xl font-bold text-white">$95</div>
-                <div className="text-base text-blue-100">por mes</div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 relative z-10 flex-1">
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="font-semibold text-white">50 firmas por mes</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-blue-50">Procesamiento en el navegador</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-blue-50">100% seguro y privado</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="h-6 w-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-blue-50">Soporte prioritario</span>
-                </li>
-              </ul>
-              <Button
-                className="w-full bg-white text-blue-600 hover:bg-blue-50 hover:shadow-lg transition-all duration-300"
-                asChild
-                size="lg"
+            return (
+              <Card
+                key={pkg.id}
+                className={`relative flex flex-col border-0 ${isPopular
+                  ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-500/30 hover:shadow-3xl hover:shadow-blue-500/40'
+                  : 'bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl'
+                  } transition-all duration-500 hover:-translate-y-2 overflow-hidden`}
               >
-                <Link href={user ? "/shop" : "/sign-up"}>Mejorar a Premium</Link>
-              </Button>
-            </CardContent>
-          </Card>
+                {isPopular && (
+                  <>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+                  </>
+                )}
+
+                <CardHeader className={`space-y-4 ${isPopular ? 'relative z-10' : ''}`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <CardTitle className={`text-3xl ${isPopular ? 'text-white' : ''}`}>{pkg.name}</CardTitle>
+                    {isPopular && (
+                      <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 whitespace-nowrap">
+                        <Sparkles className="h-3 w-3" />
+                        Popular
+                      </span>
+                    )}
+                  </div>
+                  <CardDescription className={`space-y-1 ${isPopular ? 'text-blue-100' : ''}`}>
+                    <div className={`text-5xl font-bold ${isPopular ? 'text-white' : 'text-gray-900'}`}>
+                      ${pkg.price}
+                      <span className={`text-xl ${isPopular ? 'text-white' : 'text-gray-600'} ml-2`}>MXN</span>
+                    </div>
+                    <div className={`text-base ${isPopular ? 'text-blue-100' : 'text-gray-600'}`}>
+                      Compra única, sin suscripción
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className={`space-y-6 flex-1 ${isPopular ? 'relative z-10' : ''}`}>
+                  <div>
+                    <p className={`text-lg font-semibold ${isPopular ? 'text-blue-50' : 'text-gray-700'}`}>
+                      {pkg.creditAmount} Firmas
+                    </p>
+                    <p className={`text-sm ${isPopular ? 'text-blue-100' : 'text-gray-600'}`}>
+                      ${(parseFloat(pkg.price) / pkg.creditAmount).toFixed(2)} por firma
+                    </p>
+                  </div>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isPopular
+                        ? 'bg-white/20 backdrop-blur-sm'
+                        : 'bg-amber-100'
+                        }`}>
+                        <CheckCircle2 className={`h-4 w-4 ${isPopular ? 'text-white' : 'text-amber-600'}`} />
+                      </div>
+                      <span className={isPopular ? 'text-blue-50' : 'text-gray-700'}>Créditos que nunca vencen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isPopular
+                        ? 'bg-white/20 backdrop-blur-sm'
+                        : 'bg-amber-100'
+                        }`}>
+                        <CheckCircle2 className={`h-4 w-4 ${isPopular ? 'text-white' : 'text-amber-600'}`} />
+                      </div>
+                      <span className={isPopular ? 'text-blue-50' : 'text-gray-700'}>Sin suscripción</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isPopular
+                        ? 'bg-white/20 backdrop-blur-sm'
+                        : 'bg-amber-100'
+                        }`}>
+                        <CheckCircle2 className={`h-4 w-4 ${isPopular ? 'text-white' : 'text-amber-600'}`} />
+                      </div>
+                      <span className={isPopular ? 'text-blue-50' : 'text-gray-700'}>Cancela cuando quieras</span>
+                    </li>
+                  </ul>
+                </CardContent>
+
+                <CardContent className={isPopular ? 'relative z-10' : ''}>
+                  <Button
+                    className={`w-full transition-all duration-300 ${isPopular
+                      ? 'bg-white text-blue-600 hover:bg-blue-50 hover:shadow-lg'
+                      : 'bg-amber-600 hover:bg-amber-700 text-white'
+                      }`}
+                    asChild
+                    size="lg"
+                  >
+                    <Link href={user ? '/shop' : '/sign-up'}>Comprar Ahora</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
