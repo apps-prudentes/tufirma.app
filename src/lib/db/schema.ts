@@ -49,6 +49,7 @@ export const userCredits = pgTable('user_credits', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull(), // References profiles.id
   balance: integer('balance').notNull().default(0), // Available credits
+  lastFreeSignatureClaim: timestamp('last_free_signature_claim'), // Track weekly free signature regeneration
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
