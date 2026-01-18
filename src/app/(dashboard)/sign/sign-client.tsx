@@ -386,21 +386,15 @@ export function SignPageClient() {
             />
           </Link>
 
-          {/* Plan Badge */}
+          {/* Credits Badge */}
           {limitInfo && (
             <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/50 animate-fade-in">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-700">Plan:</span>
+                <span className="text-sm font-semibold text-gray-700">Créditos disponibles:</span>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/30">
                   <Sparkles className="h-3.5 w-3.5 text-white animate-pulse" />
-                  <span className="text-sm font-bold text-white">{limitInfo.plan}</span>
+                  <span className="text-sm font-bold text-white">{limitInfo.remaining}</span>
                 </div>
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-sm text-gray-600">Firmas restantes:</span>
-                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  {limitInfo.remaining}
-                </span>
               </div>
             </div>
           )}
