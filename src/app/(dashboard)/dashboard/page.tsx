@@ -9,48 +9,24 @@ import Link from 'next/link';
 import { checkSignatureLimit } from '@/lib/utils/signatureLimits';
 
 export default function DashboardPage() {
-  const [limitInfo, setLimitInfo] = useState<any>(null);
+  const [creditInfo, setCreditInfo] = useState<{ canSign: boolean; remaining: number } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
-    const fetchLimitInfo = async () => {
+    const fetchCreditInfo = async () => {
       try {
         const data = await checkSignatureLimit();
-        setLimitInfo(data);
+        setCreditInfo(data);
       } catch (error) {
-        console.error('Error fetching limit info:', error);
+        console.error('Error fetching credit info:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLimitInfo();
+    fetchCreditInfo();
   }, []);
 
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-
-    try {
-      const response = await fetch('/api/stripe/create-portal-session', {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error creating portal session');
-      }
-
-      const { url } = await response.json();
-
-      // Redirect to the billing portal
-      window.location.href = url;
-    } catch (error) {
-      console.error('Error managing subscription:', error);
-      alert('Error al acceder al panel de suscripción. Por favor intenta de nuevo.');
-      setPortalLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -61,9 +37,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const firmasUsadas = limitInfo ? (limitInfo.maxSignatures - limitInfo.remaining) : 0;
-  const porcentajeUsado = limitInfo ? (firmasUsadas / limitInfo.maxSignatures) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
@@ -90,7 +63,7 @@ export default function DashboardPage() {
             </h1>
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
           </div>
-          <p className="text-lg text-gray-600">Gestiona tus firmas y suscripción</p>
+          <p className="text-lg text-gray-600">Gestiona tus créditos y firmas</p>
         </div>
 
         {/* Grid de Cards */}
@@ -100,54 +73,52 @@ export default function DashboardPage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
 
             <CardHeader className="relative z-10">
-              <CardDescription className="text-gray-600 font-medium">Información del Plan</CardDescription>
-              <CardTitle className="text-sm text-gray-500 mb-4">Tu plan actual y límites</CardTitle>
+              <CardDescription className="text-gray-600 font-medium">Tu Balance de Créditos</CardDescription>
+              <CardTitle className="text-sm text-gray-500 mb-4">Créditos disponibles para firmar</CardTitle>
 
-              {/* Plan Badge */}
+              {/* Credits Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/30 mb-6 group-hover:shadow-xl group-hover:shadow-blue-500/40 transition-all duration-300">
                 <Sparkles className="h-5 w-5 text-white animate-pulse" />
-                <span className="text-2xl font-bold text-white">{limitInfo?.plan || 'FREE'}</span>
+                <span className="text-2xl font-bold text-white">Créditos</span>
               </div>
 
-              {/* Firmas Disponibles */}
+              {/* Créditos Disponibles */}
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-gray-700">Firmas Disponibles</p>
+                <p className="text-sm font-semibold text-gray-700">Créditos Disponibles</p>
                 <div className="flex items-baseline gap-2">
-                  <span className={`text-5xl font-bold ${limitInfo?.remaining === 0 ? 'text-red-600' : 'bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent'}`}>
-                    {limitInfo?.remaining || 0}
+                  <span className={`text-5xl font-bold ${creditInfo?.remaining === 0 ? 'text-red-600' : 'bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent'}`}>
+                    {creditInfo?.remaining || 0}
                   </span>
-                  <span className="text-2xl text-gray-400">/{limitInfo?.maxSignatures || 1}</span>
+                  <span className="text-sm text-gray-600">firmas disponibles</span>
                 </div>
                 <p className="text-xs text-gray-500">
-                  {limitInfo?.plan === 'FREE' ? 'Restantes esta semana' : 'Restantes este mes'}
+                  {creditInfo?.remaining === 0 ? 'Sin créditos disponibles' : 'Puedes firmar PDFs'}
                 </p>
               </div>
 
-              {/* Periodo */}
+              {/* Status */}
               <div className="mt-6 pt-6 border-t border-gray-100">
-                <p className="text-sm font-semibold text-gray-700 mb-1">Periodo</p>
+                <p className="text-sm font-semibold text-gray-700 mb-1">Estado</p>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-blue-600" />
+                  <div className={`h-3 w-3 rounded-full ${creditInfo?.canSign ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
                   <span className="text-gray-900 font-medium">
-                    {limitInfo?.plan === 'FREE' ? 'Semanal' : 'Mensual'}
+                    {creditInfo?.canSign ? 'Listo para firmar' : 'Sin créditos'}
                   </span>
                 </div>
               </div>
 
-              {/* Botón Upgrade para usuarios FREE */}
-              {limitInfo?.plan === 'FREE' && (
-                <div className="mt-6">
-                  <Button
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300"
-                    asChild
-                  >
-                    <Link href="/upgrade" className="gap-2">
-                      Elegir tu plan
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              )}
+              {/* Botón Comprar Firmas */}
+              <div className="mt-6">
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300"
+                  asChild
+                >
+                  <Link href="/shop" className="gap-2">
+                    Comprar Créditos
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </CardHeader>
           </Card>
 
@@ -165,27 +136,25 @@ export default function DashboardPage() {
               </div>
               <CardTitle className="text-sm text-gray-500 mb-8">Tus firmas más recientes</CardTitle>
 
-              {/* Firmas Este Periodo */}
+              {/* Estado de Créditos */}
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Firmas Este Periodo</p>
+                  <p className="text-sm font-semibold text-gray-700 mb-2">Créditos Disponibles Ahora</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                      {firmasUsadas}
+                      {creditInfo?.remaining || 0}
                     </span>
-                    <span className="text-lg text-gray-400">de {limitInfo?.maxSignatures || 1} permitidas</span>
+                    <span className="text-lg text-gray-400">firmas disponibles</span>
                   </div>
                 </div>
 
-                {/* Barra de progreso */}
+                {/* Info adicional */}
                 <div className="space-y-2">
-                  <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-blue-500/30"
-                      style={{ width: `${porcentajeUsado}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 text-right">{porcentajeUsado.toFixed(0)}% utilizado</p>
+                  <p className="text-xs text-gray-600">
+                    {creditInfo?.canSign
+                      ? `Tienes suficientes créditos para firmar PDFs. Cada firma consume 1 crédito.`
+                      : `Necesitas comprar créditos para poder firmar PDFs.`}
+                  </p>
                 </div>
               </div>
 
@@ -228,32 +197,15 @@ export default function DashboardPage() {
                   </Link>
                 </Button>
 
-                {/* Gestionar Suscripción - Solo para PREMIUM */}
-                {limitInfo?.plan === 'PREMIUM' && (
-                  <div className="pt-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-3">Gestionar Suscripción</p>
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="w-full border-2 hover:border-blue-300 hover:bg-blue-50/50 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md group/settings bg-transparent"
-                      onClick={handleManageSubscription}
-                      disabled={portalLoading}
-                    >
-                      <Settings className="h-5 w-5 group-hover/settings:rotate-90 transition-transform duration-500" />
-                      {portalLoading ? 'Cargando...' : 'Ir al Panel de Suscripción'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Info adicional - Solo para usuarios FREE */}
-                {limitInfo?.plan === 'FREE' && (
+                {/* Info adicional - Mostrar si no hay créditos */}
+                {!creditInfo?.canSign && (
                   <div className="mt-8 pt-6 border-t border-gray-100">
-                    <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
-                      <Sparkles className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-r from-orange-50 to-red-50 border border-orange-100">
+                      <Sparkles className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 mb-1">¿Necesitas más firmas?</p>
+                        <p className="text-sm font-semibold text-gray-900 mb-1">Sin créditos disponibles</p>
                         <p className="text-xs text-gray-600 leading-relaxed">
-                          Actualiza tu plan para obtener más firmas mensuales y funciones premium.
+                          Compra créditos en la pestaña de créditos para poder firmar PDFs nuevamente.
                         </p>
                       </div>
                     </div>
