@@ -200,7 +200,8 @@ export async function getOrCreateUserCredits(userId: string): Promise<UserCredit
       .insert(userCredits)
       .values({
         userId: userId as any,
-        balance: 1, // 1 free signature per week
+        balance: 1, // 1 free signature to start
+        lastFreeSignatureClaim: new Date(), // Track when they claimed it
       })
       .returning();
     return newCredits;
@@ -258,6 +259,57 @@ export async function addCredits(
   } catch (error) {
     console.error(`[addCredits] ERROR:`, error);
     throw error;
+  }
+}
+
+export async function regenerateFreeSignature(userId: string): Promise<boolean> {
+  try {
+    const userCredit = await getOrCreateUserCredits(userId);
+
+    // Only regenerate if balance is 0
+    if (userCredit.balance > 0) {
+      console.log(`[regenerateFreeSignature] User ${userId} has ${userCredit.balance} credits, no regeneration needed`);
+      return false;
+    }
+
+    // Check if a week has passed since last claim
+    const lastClaim = userCredit.lastFreeSignatureClaim;
+    const now = new Date();
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+
+    if (lastClaim && now.getTime() - lastClaim.getTime() < weekInMs) {
+      console.log(`[regenerateFreeSignature] User ${userId} claimed too recently, wait ${weekInMs - (now.getTime() - lastClaim.getTime())}ms`);
+      return false;
+    }
+
+    // Regenerate the free signature
+    console.log(`[regenerateFreeSignature] Regenerating free signature for ${userId}`);
+
+    await db
+      .update(userCredits)
+      .set({
+        balance: 1,
+        lastFreeSignatureClaim: now,
+        updatedAt: new Date()
+      })
+      .where(eq(userCredits.userId, userId as any));
+
+    // Record the transaction
+    await db
+      .insert(creditTransactions)
+      .values({
+        userId: userId as any,
+        type: 'purchase',
+        amount: 1,
+        description: 'Firma gratuita semanal regenerada',
+        balance: 1,
+      });
+
+    console.log(`[regenerateFreeSignature] Free signature regenerated successfully for ${userId}`);
+    return true;
+  } catch (error) {
+    console.error(`[regenerateFreeSignature] ERROR:`, error);
+    return false;
   }
 }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getProfileById, createProfile, getUserCredits } from '@/lib/db/queries';
+import { getProfileById, createProfile, getOrCreateUserCredits, regenerateFreeSignature } from '@/lib/db/queries';
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,9 +18,20 @@ export async function GET(req: NextRequest) {
       profile = await createProfile(user.id);
     }
 
-    // Get user's credit balance
-    const userCredits = await getUserCredits(user.id);
-    const remaining = userCredits?.balance || 0;
+    // Get or create user's credit balance (creates with 1 free signature if new)
+    let userCredits = await getOrCreateUserCredits(user.id);
+    let remaining = userCredits.balance;
+
+    // Try to regenerate free signature if needed
+    if (remaining === 0) {
+      const regenerated = await regenerateFreeSignature(user.id);
+      if (regenerated) {
+        // Refresh the balance after regeneration
+        userCredits = await getOrCreateUserCredits(user.id);
+        remaining = userCredits.balance;
+      }
+    }
+
     const canSign = remaining > 0;
 
     return NextResponse.json({
