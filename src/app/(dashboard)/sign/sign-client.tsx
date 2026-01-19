@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { SignatureCanvasComponent } from '@/components/signature/signature-canvas';
 import { DraggableSignature } from '@/components/signature/draggable-signature';
 import { Button } from '@/components/ui/button';
@@ -96,6 +97,14 @@ export function SignPageClient() {
 
   const handleSignatureChange = (dataUrl: string) => {
     setSignatureImage(dataUrl);
+  };
+
+  const handleSignatureLoadedFromLibrary = () => {
+    if (!pdfFile) {
+      toast.error('Por favor carga un documento PDF primero.');
+      return;
+    }
+    setIsPlacingSignature(true);
   };
 
   const handleSignaturePositionChange = (position: { x: number; y: number }) => {
@@ -377,11 +386,11 @@ export function SignPageClient() {
         <div className="p-6 border-b border-gray-200/50">
           <Link href="/" className="block mb-6">
             <Image
-              src="/logo2.png"
+              src="/logo2.webp"
               alt="Logo"
               width={150}
               height={50}
-              className="h-12 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
+              className="h-24 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
               unoptimized
             />
           </Link>
@@ -453,6 +462,7 @@ export function SignPageClient() {
           <SignatureCanvasComponent
             onSignatureChange={handleSignatureChange}
             onPlaceSignature={handlePlaceSignature}
+            onSignatureLoadedFromLibrary={handleSignatureLoadedFromLibrary}
             isPlacingSignature={isPlacingSignature}
             pdfFile={pdfFile}
             isLoading={isLoading}

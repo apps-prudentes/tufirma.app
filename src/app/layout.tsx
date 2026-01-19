@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     url: 'https://tufirma.app',
     siteName: 'TuFirma',
     images: [{
-      url: '/logo1.png',
+      url: '/logo.webp',
       width: 600,
       height: 600,
     }],
@@ -46,6 +47,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

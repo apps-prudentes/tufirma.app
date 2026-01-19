@@ -33,11 +33,11 @@ export default async function Home() {
           <div className="flex items-center gap-2">
             <Link href="/">
               <Image
-                src="/logo1.png"
+                src="/logo.webp"
                 alt="SignPDF Logo"
                 width={240}
                 height={80}
-                className="h-25 w-auto transition-transform hover:scale-105 duration-300"
+                className="h-28 w-auto transition-transform hover:scale-105 duration-300"
                 unoptimized
               />
             </Link>
@@ -85,7 +85,12 @@ export default async function Home() {
               Firma tus PDFs de manera
             </span>
             <br />
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent animate-gradient-x">
+            <span
+              className="bg-clip-text text-transparent animate-gradient-x"
+              style={{
+                backgroundImage: 'linear-gradient(to right, rgb(37, 99, 235), rgb(102, 51, 153), rgb(226, 32, 116))'
+              }}
+            >
               rápida y segura
             </span>
           </h1>
@@ -232,7 +237,7 @@ export default async function Home() {
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent text-balance">
             Planes sencillos y transparentes
           </h2>
-          <p className="mt-4 text-lg md:text-xl text-gray-600">Elige el plan que mejor se adapte a tus necesidades</p>
+          <p className="mt-4 text-lg md:text-xl text-gray-600">Elige el paquete que mejor se adapte a tus necesidades</p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 max-w-6xl mx-auto">

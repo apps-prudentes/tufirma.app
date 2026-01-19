@@ -41,29 +41,21 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
       <div className="container mx-auto px-4 py-8">
-        {/* Logo */}
-        <div className="mb-8">
-          <Link href="/">
-            <Image
-              src="/logo2.png"
-              alt="Logo"
-              width={150}
-              height={50}
-              className="h-12 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
-              unoptimized
-            />
-          </Link>
-        </div>
-
-        {/* Header con animación */}
+        {/* Header con Logo y Status indicator */}
         <div className="mb-12 animate-fade-in-up">
-          <div className="flex items-center gap-3 mb-4">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-              Dashboard
-            </h1>
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+          <div className="flex items-center">
+            <Link href="/">
+              <Image
+                src="/logo2.webp"
+                alt="Logo"
+                width={250}
+                height={90}
+                className="h-24 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
+                unoptimized
+              />
+            </Link>
+            {/* <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div> */}
           </div>
-          <p className="text-lg text-gray-600">Gestiona tus créditos y firmas</p>
         </div>
 
         {/* Grid de Cards */}
