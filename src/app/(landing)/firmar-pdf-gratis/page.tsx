@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
 import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Firmar PDF Gratis Online | Sin Subir Archivos – TuFirma',
-  description: 'Firma documentos PDF gratis y 100% privado. Procesa todo en tu navegador sin subir archivos. Rápido, seguro y fácil. ¡Comienza ahora!',
+  description: 'Firma PDF gratis y 100% privado. Procesado en tu navegador sin subir a servidores. 1 firma gratis/semana o créditos desde $5.',
   keywords: ['firmar pdf gratis', 'firma pdf online gratis', 'firmar documentos gratis', 'firma digital gratis'],
   openGraph: {
     title: 'Firmar PDF Gratis Online Sin Subir Archivos',
@@ -103,6 +104,7 @@ const benefits = [
 export default function FirmarPdfGratisPage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       {/* Schema.org FAQPage */}
       <script
         type="application/ld+json"

@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, DollarSign, Zap, Shield, CheckCircle2, ArrowRight, X } from 'lucide-react';
 import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Alternativa a DocuSign - Más Barata y Privada | TuFirma',
-  description: 'DocuSign es caro y complicado. TuFirma ofrece firma digital segura desde $5/mes. Paga solo por lo que usas. Sin contratos, sin sorpresas.',
+  description: 'Alternativa a DocuSign: más barata y privada. Créditos desde $5, sin suscripción, sin contrato. Compara y ahorra hasta 80% en costos.',
   keywords: ['alternativa docusign', 'alternativa a docusign', 'docusign gratis', 'docusign barato'],
   openGraph: {
     title: 'Alternativa a DocuSign - Más Barata',
@@ -102,6 +103,7 @@ const faqs = [
 export default function AlternativaDocuSignPage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

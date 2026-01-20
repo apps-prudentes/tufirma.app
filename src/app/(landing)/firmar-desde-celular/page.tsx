@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
 import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Firmar Documentos desde Celular - Gratis y Seguro | TuFirma',
-  description: 'Firma PDFs directamente desde tu móvil. Soporte completo para Android e iOS. 100% privado. ¡Comienza ahora!',
+  description: 'Firma PDF desde tu celular en 3 pasos. Android, iPhone, tablet. Sin app, 100% privado, procesado en tu dispositivo. Rápido y seguro.',
   keywords: ['firmar desde celular', 'firmar pdf desde celular', 'firmar desde móvil', 'firmar en el celular gratis'],
   openGraph: {
     title: 'Firmar Documentos desde Celular - Gratis',
@@ -79,6 +80,7 @@ const benefits = [
 export default function FirmarDesdeCelularPage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

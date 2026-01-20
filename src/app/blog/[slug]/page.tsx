@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Footer } from '@/components/footer';
 import { Breadcrumbs } from '@/components/blog/breadcrumbs';
+import { LandingHeader } from '@/components/landing/header';
 import '../blog-content.css';
 
 interface Props {
@@ -66,6 +67,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="w-full">
+      <LandingHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
