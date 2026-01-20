@@ -17,6 +17,7 @@ import { Save, Trash2, Library } from 'lucide-react';
 interface SignatureCanvasProps {
   onSignatureChange: (dataUrl: string) => void;
   onPlaceSignature?: () => void;
+  onSignatureLoadedFromLibrary?: () => void;
   isPlacingSignature?: boolean;
   pdfFile?: File | null;
   isLoading?: boolean;
@@ -32,6 +33,7 @@ interface SavedSignature {
 export function SignatureCanvasComponent({
   onSignatureChange,
   onPlaceSignature,
+  onSignatureLoadedFromLibrary,
   isPlacingSignature = false,
   pdfFile = null,
   isLoading = false
@@ -105,7 +107,8 @@ export function SignatureCanvasComponent({
     setSignature(savedSignature.imageData);
     onSignatureChange(savedSignature.imageData);
     setLibraryDialogOpen(false);
-  }, [onSignatureChange]);
+    onSignatureLoadedFromLibrary?.();
+  }, [onSignatureChange, onSignatureLoadedFromLibrary]);
 
   // Delete a signature from library
   const deleteFromLibrary = useCallback(async (id: string) => {

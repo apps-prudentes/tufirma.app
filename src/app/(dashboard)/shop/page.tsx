@@ -76,11 +76,11 @@ export default function ShopPage() {
         <div className="mb-8">
           <Link href="/">
             <Image
-              src="/logo2.png"
+              src="/logo2.webp"
               alt="Logo"
-              width={150}
-              height={50}
-              className="h-12 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
+              width={250}
+              height={90}
+              className="h-24 w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
               unoptimized
             />
           </Link>
