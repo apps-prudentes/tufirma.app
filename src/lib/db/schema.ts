@@ -61,7 +61,7 @@ export const creditTransactions = pgTable('credit_transactions', {
   type: text('type').notNull(), // 'purchase' | 'use' | 'refund'
   amount: integer('amount').notNull(), // Quantity of credits (positive or negative)
   description: text('description'),
-  relatedSignatureId: uuid('related_signature_id'), // For type 'use'
+  relatedSignatureId: text('related_signature_id'), // For type 'use' - references signatures.id (which is text)
   relatedPaymentId: text('related_payment_id'), // For type 'purchase' (Stripe)
   balance: integer('balance').notNull(), // Balance after this transaction
   createdAt: timestamp('created_at').notNull().defaultNow(),

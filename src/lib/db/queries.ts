@@ -353,3 +353,14 @@ export async function getCreditHistory(userId: string, limit: number = 50): Prom
     .limit(limit);
   return result;
 }
+
+// Get user's recent signatures
+export async function getRecentSignatures(userId: string, limit: number = 10): Promise<Signature[]> {
+  const result = await db
+    .select()
+    .from(signatures)
+    .where(eq(signatures.userId, userId as any))
+    .orderBy(desc(signatures.signedAt))
+    .limit(limit);
+  return result;
+}
