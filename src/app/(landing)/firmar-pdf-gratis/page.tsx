@@ -4,10 +4,12 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Firmar PDF Gratis Online | Sin Subir Archivos – TuFirma',
-  description: 'Firma documentos PDF gratis y 100% privado. Procesa todo en tu navegador sin subir archivos. Rápido, seguro y fácil. ¡Comienza ahora!',
+  description: 'Firma PDF gratis y 100% privado. Procesado en tu navegador sin subir a servidores. 1 firma gratis/semana o créditos desde $5.',
   keywords: ['firmar pdf gratis', 'firma pdf online gratis', 'firmar documentos gratis', 'firma digital gratis'],
   openGraph: {
     title: 'Firmar PDF Gratis Online Sin Subir Archivos',
@@ -49,25 +51,25 @@ const steps = [
     number: '1',
     title: 'Sube tu PDF',
     description: 'Selecciona el documento PDF que quieres firmar desde tu computadora o celular.',
-    image: '/s1.png',
+    image: '/s1.webp',
   },
   {
     number: '2',
     title: 'Crea tu firma',
     description: 'Dibuja tu firma con el mouse, trackpad o dedo. Puedes usar una firma guardada o crear una nueva.',
-    image: '/s2.png',
+    image: '/s2.webp',
   },
   {
     number: '3',
     title: 'Coloca la firma',
     description: 'Arrastra y posiciona tu firma en el lugar exacto del documento. Ajusta el tamaño como necesites.',
-    image: '/s3.png',
+    image: '/s3.webp',
   },
   {
     number: '4',
     title: 'Descarga firmado',
     description: 'Descarga tu PDF firmado al instante. Listo para enviar, imprimir o archivar.',
-    image: '/s4.png',
+    image: '/s4.webp',
   },
 ];
 
@@ -102,6 +104,7 @@ const benefits = [
 export default function FirmarPdfGratisPage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       {/* Schema.org FAQPage */}
       <script
         type="application/ld+json"
@@ -423,6 +426,32 @@ export default function FirmarPdfGratisPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firma Digital Online',
+            description: 'Descubre cómo crear y guardar tu firma digital para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Guía completa para firmar PDFs directamente desde tu teléfono Android o iPhone.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Firma Segura y Privada',
+            description: 'Aprende cómo TuFirma protege tus documentos con encriptación de extremo a extremo.',
+            href: '/firma-pdf-segura',
+          },
+          {
+            title: 'Alternativa a DocuSign',
+            description: 'Compara TuFirma con DocuSign y descubre por qué es más barato y privado.',
+            href: '/alternativa-docusign',
+          },
+        ]}
+      />
 
       {/* Final CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">

@@ -74,7 +74,7 @@ export default async function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
+      <section className="container mx-auto px-4 pt-8 pb-8 text-center">
         <div className="mx-auto max-w-4xl">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200/50 mb-8 animate-fade-in">
             <Sparkles className="h-4 w-4 text-blue-600 animate-pulse" />
@@ -144,19 +144,25 @@ export default async function Home() {
             )}
           </div>
 
-          <div
-            className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 animate-fade-in"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <div className="flex items-center gap-2">
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600">
+            <div
+              className="flex items-center gap-2 animate-fade-in"
+              style={{ animationDelay: "0.4s" }}
+            >
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <span>No guardamos documentos</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-2 animate-fade-in"
+              style={{ animationDelay: "0.6s" }}
+            >
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <span>1 Firma gratis por semana</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-2 animate-fade-in"
+              style={{ animationDelay: "0.8s" }}
+            >
               <CheckCircle2 className="h-5 w-5 text-green-600" />
               <span>Sin pruebas engorrosas</span>
             </div>

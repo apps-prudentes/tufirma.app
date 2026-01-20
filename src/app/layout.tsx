@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'TuFirma | Firmar PDF Gratis Online',
-  description: 'Firma documentos PDF gratis, rápido y 100% privado. Tus archivos nunca salen de tu navegador.',
+  description: 'Firma PDF gratis y seguro en 3 pasos. 100% privado, sin subir archivos a servidores. Rápido, fácil y sin suscripción. ¡Comienza ahora!',
   keywords: ['firmar pdf gratis', 'firma digital online', 'firmar desde celular', 'firma pdf segura'],
   robots: {
     index: true,
@@ -52,7 +52,9 @@ export const metadata: Metadata = {
     images: ['https://tufirma.app/og-image.png'],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+    ],
     apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',

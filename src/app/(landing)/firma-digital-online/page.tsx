@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Firma Digital Online - Segura y Completamente Privada | TuFirma',
-  description: 'Crea tu firma digital online en segundos. Privacidad garantizada, sin subir documentos a servidores. 100% seguro y gratis para empezar.',
+  description: 'Crea y guarda tu firma digital online. Encriptada, privada, sin subir documentos. Úsala en múltiples PDFs. Gratis para probar. Sin suscripción.',
   keywords: ['firma digital online', 'firma digital', 'crear firma digital', 'firma electrónica online'],
   openGraph: {
     title: 'Firma Digital Online - Segura y Privada',
@@ -74,6 +76,7 @@ const benefits = [
 export default function FirmaDigitalOnlinePage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -252,6 +255,32 @@ export default function FirmaDigitalOnlinePage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firmar PDF Gratis',
+            description: 'Sube tu PDF y firma al instante sin complicaciones. Procesado 100% en tu navegador.',
+            href: '/firmar-pdf-gratis',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Firma documentos directamente desde tu teléfono. Android, iPhone, tablet o computadora.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Seguridad de Datos',
+            description: 'Descubre cómo protegemos tus documentos con encriptación de extremo a extremo.',
+            href: '/firma-pdf-segura',
+          },
+          {
+            title: 'Blog de TuFirma',
+            description: 'Guías, consejos y comparativas sobre firmas digitales.',
+            href: '/blog',
+          },
+        ]}
+      />
 
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">

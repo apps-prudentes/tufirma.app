@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, DollarSign, Zap, Shield, CheckCircle2, ArrowRight, X } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
+import { LandingHeader } from '@/components/landing/header';
 
 export const metadata: Metadata = {
   title: 'Alternativa a DocuSign - Más Barata y Privada | TuFirma',
-  description: 'DocuSign es caro y complicado. TuFirma ofrece firma digital segura desde $5/mes. Paga solo por lo que usas. Sin contratos, sin sorpresas.',
+  description: 'Alternativa a DocuSign: más barata y privada. Créditos desde $5, sin suscripción, sin contrato. Compara y ahorra hasta 80% en costos.',
   keywords: ['alternativa docusign', 'alternativa a docusign', 'docusign gratis', 'docusign barato'],
   openGraph: {
     title: 'Alternativa a DocuSign - Más Barata',
@@ -101,6 +103,7 @@ const faqs = [
 export default function AlternativaDocuSignPage() {
   return (
     <div className="w-full">
+      <LandingHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -346,6 +349,32 @@ export default function AlternativaDocuSignPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firma PDF Gratis',
+            description: 'Sube tu PDF y firma sin límites. Procesado 100% en tu navegador, sin enviar datos.',
+            href: '/firmar-pdf-gratis',
+          },
+          {
+            title: 'Firma Digital Online',
+            description: 'Crea tu firma digital y guárdala para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Firma documentos directamente desde tu teléfono. Android, iPhone o tablet.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Seguridad Garantizada',
+            description: 'Descubre por qué TuFirma es más seguro y privado que otros servicios.',
+            href: '/firma-pdf-segura',
+          },
+        ]}
+      />
 
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">
