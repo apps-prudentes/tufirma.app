@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { blogPosts } from '@/lib/blog/posts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
   title: 'Blog de TuFirma | Guías sobre Firma Digital',
@@ -61,11 +63,13 @@ export default function BlogPage() {
                 key={post.id}
                 className="border-0 bg-white shadow-lg hover:shadow-xl transition-shadow overflow-hidden flex flex-col"
               >
-                <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
-                  <div className="text-center px-4">
-                    <p className="text-sm font-semibold opacity-75 mb-2 uppercase">{post.category}</p>
-                    <p className="text-lg font-bold line-clamp-2">{post.title}</p>
-                  </div>
+                <div className="relative w-full h-48 overflow-hidden bg-gray-100">
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
 
                 <CardHeader className="flex-1">
@@ -129,6 +133,8 @@ export default function BlogPage() {
           </Button>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

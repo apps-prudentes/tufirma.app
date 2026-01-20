@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -48,21 +49,25 @@ const steps = [
     number: '1',
     title: 'Sube tu PDF',
     description: 'Selecciona el documento PDF que quieres firmar desde tu computadora o celular.',
+    image: '/s1.png',
   },
   {
     number: '2',
     title: 'Crea tu firma',
     description: 'Dibuja tu firma con el mouse, trackpad o dedo. Puedes usar una firma guardada o crear una nueva.',
+    image: '/s2.png',
   },
   {
     number: '3',
     title: 'Coloca la firma',
     description: 'Arrastra y posiciona tu firma en el lugar exacto del documento. Ajusta el tamaño como necesites.',
+    image: '/s3.png',
   },
   {
     number: '4',
     title: 'Descarga firmado',
     description: 'Descarga tu PDF firmado al instante. Listo para enviar, imprimir o archivar.',
+    image: '/s4.png',
   },
 ];
 
@@ -182,7 +187,7 @@ export default function FirmarPdfGratisPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((step, index) => (
               <div key={index} className="relative">
-                <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg h-full">
+                <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg h-full overflow-hidden">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-4">
                       <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
@@ -194,6 +199,18 @@ export default function FirmarPdfGratisPage() {
                     </div>
                     <CardTitle className="text-xl">{step.title}</CardTitle>
                   </CardHeader>
+
+                  <div className="px-6 mb-4">
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                      <Image
+                        src={step.image}
+                        alt={step.title}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+
                   <CardContent>
                     <p className="text-gray-600">{step.description}</p>
                   </CardContent>

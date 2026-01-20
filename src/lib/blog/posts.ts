@@ -18,7 +18,7 @@ export const blogPosts: BlogPost[] = [
     slug: 'como-firmar-pdf-desde-celular',
     title: 'Cómo Firmar un PDF desde tu Celular (Guía Paso a Paso)',
     description: 'Guía completa: cómo firmar PDFs desde tu Android o iPhone sin apps. Rápido, gratis y 100% privado.',
-    image: '/og-image.png',
+    image: '/firma.png',
     author: 'TuFirma Team',
     date: '2026-01-20',
     category: 'Guía',
@@ -200,7 +200,7 @@ Con TuFirma, firmas en 3 minutos, desde cualquier lugar, completamente privado.
     slug: 'docusign-vs-signpdf',
     title: 'DocuSign vs TuFirma: Comparación Honesta 2026',
     description: 'Comparativa completa: DocuSign vs TuFirma. Precio, seguridad, privacidad y funcionalidades. ¿Cuál elegir?',
-    image: '/og-image.png',
+    image: '/docusign.png',
     author: 'TuFirma Team',
     date: '2026-01-20',
     category: 'Comparativa',
@@ -437,7 +437,7 @@ Compras créditos. A partir de $5 tienes 5 créditos. Nunca vencen, nunca pierde
     slug: 'es-seguro-firmar-pdf',
     title: '¿Es Seguro Firmar PDFs Online? La Verdad Completa',
     description: '¿Es realmente seguro firmar documentos online? Explicamos cómo funciona la seguridad en TuFirma y por qué puedes confiar.',
-    image: '/og-image.png',
+    image: '/seguridad.png',
     author: 'TuFirma Team',
     date: '2026-01-20',
     category: 'Seguridad',
@@ -492,6 +492,7 @@ Es como firmar un documento en papel en tu casa. Nadie más lo ve.
 
 **Código simplificado de cómo funciona:**
 
+\`\`\`javascript
 // 1. PDF se carga en el navegador
 const pdfFile = await fileInput.files[0];
 
@@ -505,6 +506,7 @@ pdfDoc.addPage([...]);
 // 4. Se descarga al dispositivo
 const modifiedPdfBytes = await pdfDoc.save();
 download(modifiedPdfBytes);
+\`\`\`
 
 **Resultado:** Tu documento nunca abandona tu dispositivo.
 

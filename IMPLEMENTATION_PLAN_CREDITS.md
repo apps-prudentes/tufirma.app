@@ -730,7 +730,7 @@ const packages = [
   },
   {
     name: 'Bolsa Media',
-    price: '19.99',
+    price: '24.99',
     creditAmount: 12,
     description: '12 firmas - El más popular',
     order: 2,
@@ -772,7 +772,7 @@ await db.insert(creditPackages).values(packages);
 
 ### Testing
 - [ ] Probar compra de paquete chico ($7.99)
-- [ ] Probar compra de paquete medio ($19.99)
+- [ ] Probar compra de paquete medio ($24.99)
 - [ ] Probar que créditos se restan al firmar
 - [ ] Probar que historial de transacciones se guarda
 - [ ] Probar que no puedes firmar sin créditos

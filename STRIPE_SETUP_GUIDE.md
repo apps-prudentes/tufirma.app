@@ -14,7 +14,7 @@ Con precios:
 ### Ahora (Sistema Nuevo - Créditos)
 Tienes 3 productos de **PAGO ÚNICO**:
 - **Bolsa Chica** ($7.99 MXN) - 3 firmas
-- **Bolsa Media** ($19.99 MXN) - 12 firmas
+- **Bolsa Media** ($24.99 MXN) - 12 firmas
 - **Bolsa Pro** ($49.99 MXN) - 40 firmas
 
 ---
@@ -74,7 +74,7 @@ Tienes 3 productos de **PAGO ÚNICO**:
 Repetir proceso anterior pero con:
 - **Name**: `Bolsa Media`
 - **Description**: `12 firmas - El más popular`
-- **Amount**: `19.99`
+- **Amount**: `24.99`
 
 **Copiar el Price ID**
 
@@ -119,7 +119,7 @@ Ahora necesitas agregar los paquetes de créditos a la tabla `credit_packages`.
 INSERT INTO credit_packages (name, price, credit_amount, description, is_active, "order")
 VALUES
   ('Bolsa Chica', '7.99', 3, '3 firmas - Perfecto para probar', true, 1),
-  ('Bolsa Media', '19.99', 12, '12 firmas - El más popular', true, 2),
+  ('Bolsa Media', '24.99', 12, '12 firmas - El más popular', true, 2),
   ('Bolsa Pro', '49.99', 40, '40 firmas - Para profesionales', true, 3);
 ```
 
@@ -155,7 +155,7 @@ async function seedCreditPackages() {
         },
         {
           name: 'Bolsa Media',
-          price: '19.99',
+          price: '24.99',
           creditAmount: 12,
           description: '12 firmas - El más popular',
           isActive: true,
@@ -202,7 +202,7 @@ npx ts-node scripts/seed-credit-packages.ts
 ### ✅ Checklist de Base de Datos
 
 - [ ] La tabla `credit_packages` tiene 3 filas
-- [ ] Los precios son: 7.99, 19.99, 49.99
+- [ ] Los precios son: 7.99, 24.99, 49.99
 - [ ] Los créditos son: 3, 12, 40
 - [ ] El campo `is_active` es `true` para los 3
 

@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { marked } from 'marked';
 import { blogPosts } from '@/lib/blog/posts';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Footer } from '@/components/footer';
+import '../blog-content.css';
 
 interface Props {
   params: Promise<{
@@ -128,46 +132,31 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Hero Image */}
+      <section className="px-4 bg-white">
+        <div className="container mx-auto max-w-3xl">
+          <div className="relative w-full h-96 rounded-lg overflow-hidden shadow-lg">
+            <Image
+              src={post.image}
+              alt={post.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Content */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-3xl">
           <article className="prose prose-lg max-w-none">
             <div
-              className="space-y-6 text-gray-700 leading-relaxed"
+              className="blog-content space-y-6 text-gray-700 leading-relaxed"
               dangerouslySetInnerHTML={{
-                __html: post.content
-                  .split('\n')
-                  .map((line) => {
-                    if (line.startsWith('# ')) {
-                      return `<h1 class="text-4xl font-bold mt-12 mb-4">${line.replace('# ', '')}</h1>`;
-                    }
-                    if (line.startsWith('## ')) {
-                      return `<h2 class="text-3xl font-bold mt-10 mb-3">${line.replace('## ', '')}</h2>`;
-                    }
-                    if (line.startsWith('### ')) {
-                      return `<h3 class="text-2xl font-semibold mt-8 mb-3">${line.replace('### ', '')}</h3>`;
-                    }
-                    if (line.startsWith('- ')) {
-                      return `<li class="ml-6">${line.replace('- ', '')}</li>`;
-                    }
-                    if (line.startsWith('| ')) {
-                      return `<div class="overflow-x-auto"><table class="w-full border-collapse">${line}</table></div>`;
-                    }
-                    if (line.trim() === '') {
-                      return '<br />';
-                    }
-                    if (line.startsWith('**')) {
-                      return `<p class="font-semibold">${line}</p>`;
-                    }
-                    if (line.startsWith('```')) {
-                      return '<pre class="bg-gray-100 p-4 rounded overflow-x-auto"><code>';
-                    }
-                    if (line.trim().startsWith('✅') || line.trim().startsWith('❌')) {
-                      return `<li>${line}</li>`;
-                    }
-                    return line ? `<p>${line}</p>` : '';
-                  })
-                  .join('\n'),
+                __html: marked(post.content, {
+                  breaks: true,
+                  gfm: true,
+                }) as string,
               }}
             />
           </article>
@@ -227,6 +216,8 @@ export default async function BlogPostPage({ params }: Props) {
           </Button>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }
