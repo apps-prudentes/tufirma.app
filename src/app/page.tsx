@@ -20,7 +20,7 @@ export default async function Home() {
 
   let packages: CreditPackage[] = [];
   try {
-    packages = await getCreditPackages();
+    packages = (await getCreditPackages()) as CreditPackage[];
   } catch (error) {
     console.error('Error fetching packages:', error);
   }
