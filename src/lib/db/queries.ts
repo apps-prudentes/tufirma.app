@@ -172,7 +172,10 @@ export async function getCreditPackages(): Promise<CreditPackage[]> {
     .from(creditPackages)
     .where(eq(creditPackages.isActive, true))
     .orderBy(creditPackages.order);
-  return result;
+  return result.map(pkg => ({
+    ...pkg,
+    description: pkg.description ?? undefined
+  } as CreditPackage));
 }
 
 export async function getCreditPackageById(id: string): Promise<CreditPackage | undefined> {
@@ -180,7 +183,11 @@ export async function getCreditPackageById(id: string): Promise<CreditPackage | 
     .select()
     .from(creditPackages)
     .where(eq(creditPackages.id, id));
-  return pkg;
+  if (!pkg) return undefined;
+  return {
+    ...pkg,
+    description: pkg.description ?? undefined
+  } as CreditPackage;
 }
 
 // ============ User Credits operations ============
