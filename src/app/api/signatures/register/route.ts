@@ -36,10 +36,7 @@ export async function POST(req: NextRequest) {
       }, { status: 402 });
     }
 
-    // Deduct 1 credit from user
-    const transactionId = await useCredits(user.id, 1, `Firma de PDF: ${fileName}`);
-
-    // Register the new signature
+    // Register the new signature first
     const now = new Date();
     const weekNumber = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(getWeekNumber(now)).padStart(2, '0')}`;
     const monthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -51,14 +48,28 @@ export async function POST(req: NextRequest) {
       monthYear,
     });
 
+    // Then deduct 1 credit from user with the signature ID
+    const transaction = await useCredits(user.id, 1, newSignature.id);
+
     return NextResponse.json({
       success: true,
       signature: newSignature,
       message: 'Signature registered successfully',
     }, { status: 200 });
   } catch (error) {
-    console.error('Error registering signature:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+
+    console.error('Error registering signature:', {
+      message: errorMessage,
+      stack: errorStack,
+      error: error
+    });
+
+    return NextResponse.json({
+      error: 'Internal server error',
+      details: errorMessage
+    }, { status: 500 });
   }
 }
 
