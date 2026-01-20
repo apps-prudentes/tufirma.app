@@ -15,7 +15,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_MX',
   },
-  canonical: 'https://tufirma.app/firmar-desde-celular',
+  alternates: {
+    canonical: 'https://tufirma.app/firmar-desde-celular',
+  },
 };
 
 const faqs = [

@@ -15,7 +15,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_MX',
   },
-  canonical: 'https://tufirma.app/firmar-pdf-gratis',
+  alternates: {
+    canonical: 'https://tufirma.app/firmar-pdf-gratis',
+  },
 };
 
 const faqs = [

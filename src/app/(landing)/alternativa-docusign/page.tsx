@@ -15,7 +15,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_MX',
   },
-  canonical: 'https://tufirma.app/alternativa-docusign',
+  alternates: {
+    canonical: 'https://tufirma.app/alternativa-docusign',
+  },
 };
 
 const comparisonData = [
