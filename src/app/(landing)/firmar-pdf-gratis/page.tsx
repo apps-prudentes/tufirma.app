@@ -49,25 +49,25 @@ const steps = [
     number: '1',
     title: 'Sube tu PDF',
     description: 'Selecciona el documento PDF que quieres firmar desde tu computadora o celular.',
-    image: '/s1.png',
+    image: '/s1.webp',
   },
   {
     number: '2',
     title: 'Crea tu firma',
     description: 'Dibuja tu firma con el mouse, trackpad o dedo. Puedes usar una firma guardada o crear una nueva.',
-    image: '/s2.png',
+    image: '/s2.webp',
   },
   {
     number: '3',
     title: 'Coloca la firma',
     description: 'Arrastra y posiciona tu firma en el lugar exacto del documento. Ajusta el tamaño como necesites.',
-    image: '/s3.png',
+    image: '/s3.webp',
   },
   {
     number: '4',
     title: 'Descarga firmado',
     description: 'Descarga tu PDF firmado al instante. Listo para enviar, imprimir o archivar.',
-    image: '/s4.png',
+    image: '/s4.webp',
   },
 ];
 
