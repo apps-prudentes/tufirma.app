@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -90,13 +91,13 @@ export function SignatureCanvasComponent({
         await loadSavedSignatures();
         setSignatureName('');
         setSaveDialogOpen(false);
-        alert('Firma guardada exitosamente');
+        toast.success('¡Firma guardada exitosamente! ✅');
       } else {
         throw new Error('Error saving signature');
       }
     } catch (error) {
       console.error('Error saving signature:', error);
-      alert('Error al guardar la firma');
+      toast.error('Error al guardar la firma');
     } finally {
       setIsSaving(false);
     }
