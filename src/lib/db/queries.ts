@@ -172,10 +172,20 @@ export async function getCreditPackages(): Promise<CreditPackage[]> {
     .from(creditPackages)
     .where(eq(creditPackages.isActive, true))
     .orderBy(creditPackages.order);
-  return result.map(pkg => ({
-    ...pkg,
-    description: pkg.description ?? undefined
-  } as CreditPackage));
+  return result.map(pkg => {
+    const transformed: CreditPackage = {
+      id: pkg.id,
+      name: pkg.name,
+      price: pkg.price,
+      creditAmount: pkg.creditAmount,
+      description: pkg.description ?? undefined,
+      isActive: pkg.isActive,
+      order: pkg.order,
+      createdAt: pkg.createdAt,
+      updatedAt: pkg.updatedAt,
+    };
+    return transformed;
+  });
 }
 
 export async function getCreditPackageById(id: string): Promise<CreditPackage | undefined> {
@@ -184,10 +194,18 @@ export async function getCreditPackageById(id: string): Promise<CreditPackage | 
     .from(creditPackages)
     .where(eq(creditPackages.id, id));
   if (!pkg) return undefined;
-  return {
-    ...pkg,
-    description: pkg.description ?? undefined
-  } as CreditPackage;
+  const transformed: CreditPackage = {
+    id: pkg.id,
+    name: pkg.name,
+    price: pkg.price,
+    creditAmount: pkg.creditAmount,
+    description: pkg.description ?? undefined,
+    isActive: pkg.isActive,
+    order: pkg.order,
+    createdAt: pkg.createdAt,
+    updatedAt: pkg.updatedAt,
+  };
+  return transformed;
 }
 
 // ============ User Credits operations ============
