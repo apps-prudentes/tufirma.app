@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     'max-snippet': -1,
     'max-video-preview': -1,
   },
-  canonical: 'https://tufirma.app',
   alternates: {
+    canonical: 'https://tufirma.app',
     languages: {
       'es': 'https://tufirma.app',
     },
