@@ -96,7 +96,7 @@ export default function RootLayout({
               '@type': 'Organization',
               name: 'TuFirma',
               url: 'https://tufirma.app',
-              logo: 'https://tufirma.app/logo2.webp',
+              logo: 'https://tufirma.app/logo2.png',
               description: 'Firma documentos PDF gratis, rápido y 100% privado.',
               sameAs: [
                 'https://twitter.com/tufirma',

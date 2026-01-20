@@ -12,7 +12,7 @@ export default function NotFound() {
       {/* Logo */}
       <Link href="/" className="mb-8 block">
         <Image
-          src="/logo2.webp"
+          src="/logo2.png"
           alt="TuFirma"
           width={250}
           height={90}

@@ -89,7 +89,7 @@ export default function DashboardPage() {
           <div className="flex items-center">
             <Link href="/">
               <Image
-                src="/logo2.webp"
+                src="/logo2.png"
                 alt="Logo"
                 width={250}
                 height={90}

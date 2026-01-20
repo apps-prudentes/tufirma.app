@@ -76,7 +76,7 @@ export default function ShopPage() {
         <div className="mb-8">
           <Link href="/">
             <Image
-              src="/logo2.webp"
+              src="/logo2.png"
               alt="Logo"
               width={250}
               height={90}

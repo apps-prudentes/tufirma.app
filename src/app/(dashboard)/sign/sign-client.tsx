@@ -325,6 +325,7 @@ export function SignPageClient() {
       // Register the signature and deduct credits
       try {
         await registerSignature(pdfFile.name);
+        toast.success('¡Firma registrada exitosamente! 🎉');
         // Update the displayed limit info after successful registration
         const updatedLimitData = await checkSignatureLimit();
         setLimitInfo({
@@ -335,8 +336,9 @@ export function SignPageClient() {
         console.error('Error registering signature:', registrationError);
         // Check if it was a 402 (insufficient credits) error
         if (registrationError.message?.includes('Insufficient credits')) {
-          alert('No hay suficientes créditos para esta firma. Por favor compra más.');
+          toast.error('No hay suficientes créditos para esta firma. Por favor compra más.');
         } else {
+          toast.error('Error al registrar la firma en la base de datos.');
           console.warn('Could not register signature in database:', registrationError);
         }
       }
@@ -348,7 +350,7 @@ export function SignPageClient() {
       }, 1000);
     } catch (error) {
       console.error('Error signing PDF:', error);
-      alert('Error al firmar el PDF: ' + (error as Error).message);
+      toast.error('Error al firmar el PDF: ' + (error as Error).message);
       setIsLoading(false);
       setProgress(0);
     }
@@ -386,7 +388,7 @@ export function SignPageClient() {
         <div className="p-6 border-b border-gray-200/50">
           <Link href="/" className="block mb-6">
             <Image
-              src="/logo2.webp"
+              src="/logo2.png"
               alt="Logo"
               width={150}
               height={50}
