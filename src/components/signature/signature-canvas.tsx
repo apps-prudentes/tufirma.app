@@ -72,7 +72,7 @@ export function SignatureCanvasComponent({
   // Save current signature to library
   const saveToLibrary = useCallback(async () => {
     if (!signature || !signatureName.trim()) {
-      alert('Por favor, ingresa un nombre para la firma');
+      toast.error('Por favor, ingresa un nombre para la firma');
       return;
     }
 
@@ -129,7 +129,7 @@ export function SignatureCanvasComponent({
       }
     } catch (error) {
       console.error('Error deleting signature:', error);
-      alert('Error al eliminar la firma');
+      toast.error('Error al eliminar la firma');
     }
   }, [loadSavedSignatures]);
 
@@ -143,7 +143,7 @@ export function SignatureCanvasComponent({
 
   const save = useCallback(() => {
     if (sigCanvas.current && sigCanvas.current.isEmpty()) {
-      alert('Please draw a signature first.');
+      toast.error('Please draw a signature first.');
       return;
     }
 

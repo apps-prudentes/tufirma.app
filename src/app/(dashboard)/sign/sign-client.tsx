@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Document, Page, pdfjs } from 'react-pdf';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,6 +18,7 @@ import { Upload, FileText, Sparkles, FileSignature, CheckCircle2 } from 'lucide-
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export function SignPageClient() {
+  const router = useRouter();
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -173,7 +175,7 @@ export function SignPageClient() {
       });
 
       if (!limitData.canSign) {
-        alert('No tienes créditos disponibles. Por favor compra más firmas.');
+        router.push('/shop');
         return;
       }
     } catch (error) {
@@ -486,7 +488,7 @@ export function SignPageClient() {
             size="lg"
             onClick={handleExportPDF}
             className="w-full group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:-translate-y-1"
-            disabled={!pdfFile || !signatureImage || isLoading || (limitInfo ? !limitInfo.canSign : false)}
+            disabled={!pdfFile || !signatureImage || isLoading}
           >
             <FileSignature className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
             {isLoading ? `Exportando... ${progress}%` : 'Exportar PDF firmado'}
@@ -666,7 +668,7 @@ export function SignPageClient() {
                 onClick={handleExportPDF}
                 size="lg"
                 className="w-full group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:-translate-y-1"
-                disabled={!pdfFile || !signatureImage || isLoading || (limitInfo ? !limitInfo.canSign : false)}
+                disabled={!pdfFile || !signatureImage || isLoading}
               >
                 <FileSignature className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                 {isLoading ? `Exportando... ${progress}%` : 'Exportar PDF firmado'}
