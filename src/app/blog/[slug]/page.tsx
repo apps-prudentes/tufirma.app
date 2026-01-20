@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, User, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Footer } from '@/components/footer';
+import { Breadcrumbs } from '@/components/blog/breadcrumbs';
 import '../blog-content.css';
 
 interface Props {
@@ -92,13 +93,12 @@ export default async function BlogPostPage({ params }: Props) {
       {/* Header */}
       <section className="py-12 px-4 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 border-b">
         <div className="container mx-auto max-w-3xl">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver al Blog
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: 'Blog', href: '/blog' },
+              { label: post.title, href: `/blog/${slug}` },
+            ]}
+          />
 
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
           <p className="text-xl text-gray-600 mb-6">{post.description}</p>

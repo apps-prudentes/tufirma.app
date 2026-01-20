@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
 
 export const metadata: Metadata = {
   title: 'Firmar PDF Gratis Online | Sin Subir Archivos – TuFirma',
@@ -423,6 +424,32 @@ export default function FirmarPdfGratisPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firma Digital Online',
+            description: 'Descubre cómo crear y guardar tu firma digital para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Guía completa para firmar PDFs directamente desde tu teléfono Android o iPhone.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Firma Segura y Privada',
+            description: 'Aprende cómo TuFirma protege tus documentos con encriptación de extremo a extremo.',
+            href: '/firma-pdf-segura',
+          },
+          {
+            title: 'Alternativa a DocuSign',
+            description: 'Compara TuFirma con DocuSign y descubre por qué es más barato y privado.',
+            href: '/alternativa-docusign',
+          },
+        ]}
+      />
 
       {/* Final CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
 
 export const metadata: Metadata = {
   title: 'Firmar Documentos desde Celular - Gratis y Seguro | TuFirma',
@@ -243,6 +244,32 @@ export default function FirmarDesdeCelularPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firmar PDF Gratis',
+            description: 'Guía completa para firmar documentos PDF sin límites ni restricciones.',
+            href: '/firmar-pdf-gratis',
+          },
+          {
+            title: 'Firma Digital Online',
+            description: 'Crea y guarda tu firma digital para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Alternativa a DocuSign',
+            description: 'Compara TuFirma con DocuSign y ahorra hasta el 80% en costos.',
+            href: '/alternativa-docusign',
+          },
+          {
+            title: 'Privacidad y Seguridad',
+            description: 'Aprende cómo TuFirma protege tus documentos con encriptación avanzada.',
+            href: '/firma-pdf-segura',
+          },
+        ]}
+      />
 
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, Zap, Smartphone, Shield, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
 
 export const metadata: Metadata = {
   title: 'Firma PDF de Forma Segura y Privada | TuFirma',
@@ -295,6 +296,32 @@ export default function FirmaPdfSeguraPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firmar PDF Gratis',
+            description: 'Sube tu PDF, crea tu firma y descárgalo. Sin subir datos a servidores.',
+            href: '/firmar-pdf-gratis',
+          },
+          {
+            title: 'Firma Digital Online',
+            description: 'Guarda tu firma digital para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Firma documentos desde tu teléfono con la misma seguridad y facilidad.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Alternativa a DocuSign',
+            description: 'Compara TuFirma con DocuSign y descubre por qué somos más seguros.',
+            href: '/alternativa-docusign',
+          },
+        ]}
+      />
 
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">

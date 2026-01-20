@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSignature, Lock, DollarSign, Zap, Shield, CheckCircle2, ArrowRight, X } from 'lucide-react';
+import { RelatedResources } from '@/components/landing/related-resources';
 
 export const metadata: Metadata = {
   title: 'Alternativa a DocuSign - Más Barata y Privada | TuFirma',
@@ -346,6 +347,32 @@ export default function AlternativaDocuSignPage() {
           </div>
         </div>
       </section>
+
+      {/* Related Resources */}
+      <RelatedResources
+        resources={[
+          {
+            title: 'Firma PDF Gratis',
+            description: 'Sube tu PDF y firma sin límites. Procesado 100% en tu navegador, sin enviar datos.',
+            href: '/firmar-pdf-gratis',
+          },
+          {
+            title: 'Firma Digital Online',
+            description: 'Crea tu firma digital y guárdala para usarla en múltiples documentos.',
+            href: '/firma-digital-online',
+          },
+          {
+            title: 'Firmar desde Celular',
+            description: 'Firma documentos directamente desde tu teléfono. Android, iPhone o tablet.',
+            href: '/firmar-desde-celular',
+          },
+          {
+            title: 'Seguridad Garantizada',
+            description: 'Descubre por qué TuFirma es más seguro y privado que otros servicios.',
+            href: '/firma-pdf-segura',
+          },
+        ]}
+      />
 
       {/* CTA */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-600 to-indigo-600">
