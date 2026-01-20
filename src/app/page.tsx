@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FileSignature, CheckCircle2, Zap, Shield, Sparkles, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getCreditPackages } from "@/lib/db/queries";
+import { Footer } from "@/components/footer";
 
 interface CreditPackage {
   id: string;
@@ -366,12 +367,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white/80 backdrop-blur-sm py-12">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p className="text-sm">&copy; 2026 SignPDF. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

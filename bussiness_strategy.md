@@ -28,7 +28,7 @@ No "planes mensuales". Bolsas de firmas que nunca vencen.
 |------|--------|--------|---------|------------|
 | Prueba Gratis | $0 | 1/semana | $0 | El gancho |
 | Bolsa Chica | $7.99 | 3 | $2.66 | "Menos que una torta" |
-| Bolsa Media | $19.99 | 12 | $1.67 | "Un café + desayuno" |
+| Bolsa Media | $24.99 | 12 | $1.67 | "Un café + desayuno" |
 | Bolsa Pro | $49.99 | 40 | $1.25 | "Un almuerzo" |
 | Premium (Opcional) | $39.99/mes | Ilimitadas | - | Para profesionales |
 
@@ -84,14 +84,14 @@ Tu diseño DEBE gritar "Rapidez".
 | Competidor | Precio Mensual | Lo que ofreces tú | Tu ventaja |
 |---|---|---|---|
 | DocuSign | ~$10 - $15 USD ($200 - $300 MXN) | $49.99 MXN (Bolsa Pro) | Eres 60-70% más barato |
-| Adobe Sign | ~$15 - $20 USD ($300+ MXN) | $19.99 MXN (Bolsa Media) | Micro-segmentación. Ellos no te venden "solo 12 firmas". Tú sí. |
+| Adobe Sign | ~$15 - $20 USD ($300+ MXN) | $24.99 MXN (Bolsa Media) | Micro-segmentación. Ellos no te venden "solo 12 firmas". Tú sí. |
 | SmallPDF | ~$9 USD/mes | Freemium + Créditos | Velocidad. Eres directo. |
 
 ### B. Unit Economics (¿Es rentable?)
 
-#### Transacción de $19.99:
+#### Transacción de $24.99:
 ```
-Costo Bruto: $19.99 MXN
+Costo Bruto: $24.99 MXN
 Comisión Pasarela (3.6% + $3 MXN): ~$3.72 MXN (18.6%)
 Impuesto (IVA 16%): ~$2.56 MXN
 Ingreso Neto (antes de costos operativos): ~$13.71 MXN
@@ -116,7 +116,7 @@ Margen: 75% ✅
 
 Para ganar $10,000 MXN libres al mes:
 - Necesitas ~110 usuarios comprando Bolsa Pro ($49.99)
-- O necesitas ~500 usuarios comprando Bolsa Media ($19.99)
+- O necesitas ~500 usuarios comprando Bolsa Media ($24.99)
 - **Mix Realista**: 60 usuarios Bolsa Pro + 250 usuarios Bolsa Media = $10,000
 
 ¿Es lograble? **Sí, con buen SEO y TikToks virales** atacando el "dolor" de no tener impresora.
@@ -200,7 +200,7 @@ Tabla "signatures" (opcional: guardar la imagen de la firma)
 2. ✅ **Precios finales**:
    - Gratis: 1/semana
    - $7.99 → 3 créditos
-   - $19.99 → 12 créditos
+   - $24.99 → 12 créditos
    - $49.99 → 40 créditos
    - $39.99/mes → Ilimitadas (Premium)
 3. ✅ **DB**: Solo guarda metadatos (transacciones, historial). Las imágenes de firmas → S3
