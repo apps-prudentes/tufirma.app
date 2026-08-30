@@ -7,7 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.5",
@@ -42,7 +49,10 @@
   },
   "devDependencies": {
     "@clerk/types": "^4.101.9",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/file-saver": "^2.0.7",
     "@types/micro": "^7.3.7",
     "@types/node": "^20",
@@ -55,8 +65,12 @@
     "drizzle-kit": "^0.31.8",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "jest": "^30.5.0",
+    "jest-environment-jsdom": "^30.5.0",
+    "playwright": "^1.62.1",
     "prisma": "^6.19.1",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.12",
     "typescript": "^5",
     "vitest": "^4.0.17",
     "worker-loader": "^3.0.8"
