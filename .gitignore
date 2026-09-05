@@ -46,3 +46,9 @@ next-env.d.ts
 /.clerk/
 .md
 /docs-md
+
+#tests
+/test-results
+/playwright-report
+# stray secrets that shouldn't live in the repo
+apikey-ml-dash.txt
