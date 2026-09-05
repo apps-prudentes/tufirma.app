@@ -180,60 +180,52 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white">
-            <CardHeader>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-blue-500/30">
-                <FileSignature className="h-7 w-7 text-white" />
-              </div>
-              <CardTitle className="text-xl">Firma Digital</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white flex flex-row items-start gap-4 p-6 md:block md:p-0">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-blue-500/30 md:mx-6 md:mt-6 md:mb-4">
+              <FileSignature className="h-7 w-7 text-white" />
+            </div>
+            <div className="md:px-6 md:pb-6">
+              <CardTitle className="text-xl mb-1.5 md:mb-1.5">Firma Digital</CardTitle>
               <p className="text-gray-600 leading-relaxed">
                 Crea tu firma con el mouse o pantalla táctil y colócala donde quieras en el PDF.
               </p>
-            </CardContent>
+            </div>
           </Card>
 
-          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white">
-            <CardHeader>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-amber-500/30">
-                <Zap className="h-7 w-7 text-white" />
-              </div>
-              <CardTitle className="text-xl">Súper Rápido</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white flex flex-row items-start gap-4 p-6 md:block md:p-0">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-amber-500/30 md:mx-6 md:mt-6 md:mb-4">
+              <Zap className="h-7 w-7 text-white" />
+            </div>
+            <div className="md:px-6 md:pb-6">
+              <CardTitle className="text-xl mb-1.5 md:mb-1.5">Súper Rápido</CardTitle>
               <p className="text-gray-600 leading-relaxed">
                 Todo el procesamiento se hace en tu navegador. Sin subidas lentas a servidores.
               </p>
-            </CardContent>
+            </div>
           </Card>
 
-          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white">
-            <CardHeader>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-emerald-500/30">
-                <Shield className="h-7 w-7 text-white" />
-              </div>
-              <CardTitle className="text-xl">100% Seguro</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white flex flex-row items-start gap-4 p-6 md:block md:p-0">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-emerald-500/30 md:mx-6 md:mt-6 md:mb-4">
+              <Shield className="h-7 w-7 text-white" />
+            </div>
+            <div className="md:px-6 md:pb-6">
+              <CardTitle className="text-xl mb-1.5 md:mb-1.5">100% Seguro</CardTitle>
               <p className="text-gray-600 leading-relaxed">
                 Tus documentos nunca salen de tu navegador. Total privacidad garantizada.
               </p>
-            </CardContent>
+            </div>
           </Card>
 
-          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white">
-            <CardHeader>
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-indigo-500/30">
-                <CheckCircle2 className="h-7 w-7 text-white" />
-              </div>
-              <CardTitle className="text-xl">Fácil de Usar</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Card className="group border-0 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white flex flex-row items-start gap-4 p-6 md:block md:p-0">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg shadow-indigo-500/30 md:mx-6 md:mt-6 md:mb-4">
+              <CheckCircle2 className="h-7 w-7 text-white" />
+            </div>
+            <div className="md:px-6 md:pb-6">
+              <CardTitle className="text-xl mb-1.5 md:mb-1.5">Fácil de Usar</CardTitle>
               <p className="text-gray-600 leading-relaxed">
                 Interfaz intuitiva en 3 pasos: carga, firma y descarga. Así de simple.
               </p>
-            </CardContent>
+            </div>
           </Card>
         </div>
       </section>
